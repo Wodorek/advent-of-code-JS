@@ -1,3 +1,4 @@
+import calculateScore from './helpers/calculateScore';
 import checkForWin from './helpers/checkForWin';
 import createBoards from './helpers/crateBoards';
 import markNumber from './helpers/markNumber';
@@ -32,21 +33,5 @@ const findWinning = () => {
 };
 
 const [winningBoard, lastNumber] = findWinning();
-
-const calculateScore = (board: any[][], number: number) => {
-  let acc = 0;
-
-  for (let i = 0; i < board.length; i++) {
-    const element = board[i];
-
-    for (let j = 0; j < element.length; j++) {
-      if (typeof board[i][j] === 'string') {
-        acc += +board[i][j];
-      }
-    }
-  }
-
-  return acc * number;
-};
 
 console.log(calculateScore(winningBoard, lastNumber));
