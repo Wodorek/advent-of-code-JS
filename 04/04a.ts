@@ -1,4 +1,5 @@
 import checkForWin from './helpers/checkForWin';
+import createBoards from './helpers/crateBoards';
 import markNumber from './helpers/markNumber';
 
 import input from './input';
@@ -11,33 +12,7 @@ const draws = [
   61, 98, 89, 43, 3, 84, 67, 38, 68, 27, 81, 39, 15, 50, 60, 24, 45, 75, 33, 31,
 ];
 
-//transform input into array of boards
-const arrays = input.split('\n').map((el) => {
-  if (el === '') {
-    return ' ';
-  }
-  return [
-    ...el.split(' ').filter((el) => {
-      return el !== '';
-    }),
-  ];
-});
-
-const boards: any[] = [];
-let curr = 0;
-
-for (let i = 0; i < arrays.length; i++) {
-  if (!boards[curr]) {
-    boards.push([]);
-  }
-
-  if (arrays[i] === ' ') {
-    curr++;
-    continue;
-  }
-
-  boards[curr].push(arrays[i]);
-}
+const boards = createBoards(input);
 
 const findWinning = () => {
   for (let i = 0; i < draws.length; i++) {
