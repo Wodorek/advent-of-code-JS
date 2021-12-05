@@ -1,3 +1,9 @@
+/**
+ *
+ * @param board two dimensional array, of x by x size
+ * @param number winning number
+ * @returns calculated score, according to the challenge formula: sun of unpicked numbers * winning number
+ */
 const calculateScore = (board: any[][], number: number) => {
   let acc = 0;
 
