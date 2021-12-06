@@ -32,3 +32,5 @@ for (let i = 0; i < 256; i++) {
     timers[j + 1] = 0;
   }
 }
+
+console.log(getFishPopulation(timers));
