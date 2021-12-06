@@ -3,6 +3,7 @@ import prepareInput from './prepareInput';
 
 let inputArr = prepareInput(input);
 
+//this is a "naive" solutions, that will cause problems with more days (iterations). See the second part of this day, for a better one
 for (let i = 0; i < 80; i++) {
   for (let j = 0; j < inputArr.length; j++) {
     if (inputArr[j] === 0) {
