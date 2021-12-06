@@ -21,7 +21,6 @@ const timers: { [key: number]: number } = {
 prepared.forEach((el) => {
   timers[el] += 1;
 });
-console.log('start', timers);
 
 for (let i = 0; i < 256; i++) {
   timers[9] = timers[0];
@@ -33,5 +32,3 @@ for (let i = 0; i < 256; i++) {
     timers[j + 1] = 0;
   }
 }
-
-console.log(getFishPopulation(timers));
