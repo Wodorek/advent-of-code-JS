@@ -11,8 +11,6 @@ const prepareInput = (input: string) => {
 
   const arr: string[][] = [];
 
-  console.log(split[0]);
-
   //real input
 
   for (let i = 0; i < split.length; i++) {
