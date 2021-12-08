@@ -4,26 +4,32 @@
  */
 const prepareInput = (input: string) => {
   // for real input
-  // const split = input.split(/[a-z]\n+/g);
+  const split = input.split(/\n+/g);
 
-  //for test input
-  const split = input.split('\n');
+  // //for test input
+  // const split = input.split('\n');
 
   const arr: string[][] = [];
 
+  console.log(split[0]);
+
   //real input
 
-  // for (let i = 0; i < split.length; i++) {
-  //   const element = split[i].split(' | ');
+  for (let i = 0; i < split.length; i++) {
+    const element = split[i].split(' | ');
 
-  //   arr.push([element[0], element[1]]);
-  // }
+    if (i === 0) {
+      console.log(element);
+    }
 
-  //test input
-
-  for (let i = 0; i < split.length; i += 2) {
-    arr.push([split[0].replace(' |', ''), split[1]]);
+    arr.push([element[0], element[1]]);
   }
+
+  // //test input
+
+  // for (let i = 0; i < split.length; i += 2) {
+  //   arr.push([split[i].replace(' |', ''), split[i + 1]]);
+  // }
 
   return arr;
 };
