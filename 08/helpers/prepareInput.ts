@@ -16,10 +16,6 @@ const prepareInput = (input: string) => {
   for (let i = 0; i < split.length; i++) {
     const element = split[i].split(' | ');
 
-    if (i === 0) {
-      console.log(element);
-    }
-
     arr.push([element[0], element[1]]);
   }
 
