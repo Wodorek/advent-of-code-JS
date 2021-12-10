@@ -45,7 +45,6 @@ const findMySeat = (arr: number[]) => {
     }
     curr++;
   }
-  console.log(mySeat);
 };
 
 findMySeat(sortedIds);
