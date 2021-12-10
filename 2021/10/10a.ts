@@ -5,10 +5,6 @@ import points from './points';
 
 const inputArr = prepareInput(input);
 
-// const lineLength = inputArr.reduce((prev, val) => {
-//   return prev.length > val.length ? prev : val;
-// }).length;
-
 let score = 0;
 
 const openers = Object.keys(mapping);
