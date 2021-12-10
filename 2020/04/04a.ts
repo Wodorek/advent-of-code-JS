@@ -3,8 +3,6 @@ import input from './input';
 
 const inputArr = prepareInput(input);
 
-console.log(inputArr);
-
 let validPassports = 0;
 
 for (let i = 0; i < inputArr.length; i++) {
@@ -12,9 +10,7 @@ for (let i = 0; i < inputArr.length; i++) {
 
   const fields = Object.keys(el);
 
-  if (fields.length === 8) {
-    validPassports++;
-  } else if (fields.length === 7 && !fields.includes('cid')) {
+  if (fields.length === 8 || (fields.length === 7 && !fields.includes('cid'))) {
     validPassports++;
   }
 }
