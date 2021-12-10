@@ -1,7 +1,7 @@
 import prepareInput from './helpers/prepareInput';
 import input from './input';
 import mapping from './mapping';
-import points from './points';
+import points from './pointsA';
 
 const inputArr = prepareInput(input);
 
