@@ -3,10 +3,7 @@ import input from './input';
 
 const inputArr = prepareInput(input);
 
-console.log(inputArr);
-
 const lineLength = inputArr[0].length;
-console.log(lineLength);
 
 const slopeHeight = inputArr.length - 1;
 let posX = 0;
