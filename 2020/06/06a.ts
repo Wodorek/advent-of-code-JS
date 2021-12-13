@@ -3,8 +3,8 @@ import input from './input';
 
 const inputArr = prepareInput(input);
 
-const groups = [];
-let group = new Set();
+const groups: Set<String>[] = [];
+let group: Set<String> = new Set();
 
 for (let i = 0; i < inputArr.length; i++) {
   const element = inputArr[i];
