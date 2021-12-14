@@ -3,6 +3,9 @@ import input from './input';
 
 let [inputArr, lookup] = prepareInput(input);
 
+//Yes, this solution is pretty wordy and not very efficient, but it was interesting to program kind of step by step of putting together this long chain
+//For an actual solution, that doesn't require terabytes of memory, please see 14b.ts
+
 for (let i = 0; i < 10; i++) {
   const pairs: string[][] = [];
 
