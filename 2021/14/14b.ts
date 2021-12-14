@@ -21,6 +21,7 @@ for (let i = 0; i < inputArr.length; i++) {
   }
 }
 
+//an actual solution starts here
 for (let i = 0; i < 40; i++) {
   const pairKeys = Object.keys(pairs);
 
@@ -51,6 +52,8 @@ for (let i = 0; i < 40; i++) {
 
   pairs = newPairs;
 }
+
+//calculate the numbers, could be a calculate func
 
 const firstChar = inputArr[0];
 const lastChar = inputArr[inputArr.length - 1];
