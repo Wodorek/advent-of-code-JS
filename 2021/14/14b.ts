@@ -85,8 +85,6 @@ const vals = Object.values(letterCounts).map((el) => {
   return el / 2;
 });
 
-console.log(letterCounts);
-
 const max = Math.max(...vals);
 const min = Math.min(...vals);
 
