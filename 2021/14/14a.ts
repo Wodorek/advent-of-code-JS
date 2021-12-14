@@ -6,7 +6,7 @@ let [inputArr, lookup] = prepareInput(input);
 for (let i = 0; i < 10; i++) {
   const pairs: string[][] = [];
 
-  const parts = inputArr[0].split('');
+  const parts = inputArr.split('');
 
   //create individual pairs to modifiy, to avoid chaining modifications
   parts.forEach((part, idx) => {
@@ -35,13 +35,13 @@ for (let i = 0; i < 10; i++) {
     newPolymer.push(...el);
   });
 
-  inputArr[0] = newPolymer.join('');
+  inputArr = newPolymer.join('');
 }
 
 //count the elements
 const counts: { [key: string]: number } = {};
 
-inputArr[0].split('').forEach((el) => {
+inputArr.split('').forEach((el) => {
   if (counts[el]) {
     counts[el]++;
   } else {
