@@ -1,0 +1,3 @@
+//I hate those pathfinding algorithms so much...
+
+//I'll probably revisit it in the future, but that just isn't fun, so I'll skip it
