@@ -1,57 +1,12 @@
 import input from './input';
 import prepareInput from './helpers/prepareInput';
+import isOvershot from './helpers/isOvershot';
+import isWithinRange from './helpers/isWithinRange';
+import calculateStep from './helpers/calculateStep';
 
 const [xRange, yRange] = prepareInput(input);
 
 console.log(xRange, yRange);
-
-const isWithinRange = (
-  posX: number,
-  posY: number,
-  xRange: number[],
-  yRange: number[]
-) => {
-  if (
-    posX >= xRange[0] &&
-    posX <= xRange[1] &&
-    posY >= yRange[0] &&
-    posY <= yRange[1]
-  ) {
-    return true;
-  }
-  return false;
-};
-
-//if we already overshot, there is no point in doing more calculations, since we can't go back
-const isOvershot = (posX: number, posY: number, xMax: number, yMax: number) => {
-  if (posX > xMax) {
-    return true;
-  }
-  if (posY < yMax) {
-    return true;
-  }
-
-  return false;
-};
-
-const calculateStep = (position: number[], velocities: number[]) => {
-  const newPosition = [
-    position[0] + velocities[0],
-    position[1] + velocities[1],
-  ];
-
-  let newXV = velocities[0];
-
-  if (newXV > 0) {
-    newXV--;
-  } else if (newXV < 0) {
-    newXV++;
-  }
-
-  const newYV = velocities[1] - 1;
-
-  return [newPosition, [newXV, newYV]];
-};
 
 let currPosition = [0, 0];
 
