@@ -29,8 +29,6 @@ const readPacket = (idx: number) => {
       val = val.concat(part);
       idx += 5;
     }
-
-    console.log('literal value packet, value: ', parseInt(val, 2));
     return idx;
   }
 
