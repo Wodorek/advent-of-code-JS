@@ -3,7 +3,7 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-console.log(inputArr);
+//Yea, this 1000% won't work in part 2, it barely scrambles in part 1
 
 const cubes: { [key: string]: number } = {};
 
