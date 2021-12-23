@@ -7,14 +7,12 @@ let sorted = inputArr.sort((a, b) => {
   return a > b ? 1 : -1;
 });
 
-sorted = [0, ...sorted];
+sorted = [0, ...sorted, sorted[sorted.length - 1] + 3];
 
 let left = 0;
 let right = 1;
 
-const joltDiffs: { [key: number]: number } = {
-  3: 1,
-};
+const joltDiffs: { [key: number]: number } = {};
 
 while (right < sorted.length) {
   const difference = sorted[right] - sorted[left];
