@@ -8,7 +8,16 @@ const calculateArea = (l: number, w: number, h: number) => {
   const side2 = 2 * w * h;
   const side3 = 2 * h * l;
 
-  return side1 + side2 + side3 + Math.min(side1, side2, side3) / 2;
+  const ribbon = [l, w, h]
+    .sort((a, b) => a - b)
+    .slice(0, 2)
+    .reduce((prev, val) => {
+      return (prev += val * 2);
+    }, 0);
+
+  const bow = l * w * h;
+
+  return ribbon + bow;
 };
 
 let totalNeeded = 0;
