@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Wodorek/advent-of-code-JS/issues"
   },
-  "homepage": "https://github.com/Wodorek/advent-of-code-JS#readme"
+  "homepage": "https://github.com/Wodorek/advent-of-code-JS#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.5"
+  }
 }
