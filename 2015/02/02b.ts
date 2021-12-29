@@ -4,10 +4,6 @@ import prepareInput from './helpers/prepareInput';
 const inputArr = prepareInput(input);
 
 const calculateArea = (l: number, w: number, h: number) => {
-  const side1 = 2 * l * w;
-  const side2 = 2 * w * h;
-  const side3 = 2 * h * l;
-
   const ribbon = [l, w, h]
     .sort((a, b) => a - b)
     .slice(0, 2)
