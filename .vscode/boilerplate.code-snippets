@@ -26,7 +26,7 @@
       "",
       "const inputArr = prepareInput(input)",
       "",
-      "console.log(input)"
+      "console.log(inputArr)"
     ],
     "description": "create boilerplate of a solution"
   }
