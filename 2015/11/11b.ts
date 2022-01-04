@@ -1,7 +1,5 @@
 import input from './input';
 
-console.log(input);
-
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const possibleStraights: string[] = [];
 
