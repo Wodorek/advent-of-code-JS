@@ -12,6 +12,12 @@ const processSignal = (instruction: [string, string[]], idx: number) => {
   const [operation, args] = instruction;
 
   if (operation === 'PROVIDE') {
+    if (args[1] === 'b') {
+      foundValues[args[1]] = 3176;
+      processedIdx.push(idx);
+      return;
+    }
+
     if (isNaN(+args[0])) {
       if (Object.keys(foundValues).includes(args[0])) {
         foundValues[args[1]] = foundValues[args[0]];
@@ -74,6 +80,7 @@ const parse = () => {
 
 while (inputArr.length > 0) {
   parse();
+  console.log(inputArr.length);
 }
 
 console.log(foundValues['a']);
