@@ -65,10 +65,10 @@ for (let index = 0; index < 2503; index++) {
   firstReindeer.points++;
 }
 
-let maxPosition = 0;
+let maxScore = 0;
 
 reindeers.forEach((reindeer) => {
-  maxPosition = Math.max(maxPosition, reindeer.position);
+  maxScore = Math.max(maxScore, reindeer.points);
 });
 
-console.log(reindeers);
+console.log(maxScore);
