@@ -50,8 +50,6 @@ possibleSeating.forEach((table) => {
   }
 });
 
-console.log(bestTable);
-
 //ACTUAl part 2 code
 
 bestTable.forEach((person) => {
