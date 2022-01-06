@@ -26,13 +26,13 @@ Object.keys(presentAunt).forEach((key) => {
 
     if (!auntKeys.includes(key)) {
       return true;
-    } else {
-      if (aunt[key] === presentAunt[idx]) {
-        return true;
-      }
-      return false;
     }
+
+    if (aunt[key] === presentAunt[idx]) {
+      return true;
+    }
+    return false;
   });
 });
 
-console.log(matchingAunts[0].id);
+console.log(matchingAunts);
