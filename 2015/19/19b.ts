@@ -19,20 +19,18 @@ const replaceInString = (
   return left + newStr + right;
 };
 
-while (molecule !== 'e') {}
+while (molecule !== 'e') {
+  transformations.forEach((transformation) => {
+    const lookFor = transformation[1];
+    const replacement = transformation[0];
+    const windowSize = lookFor.length;
 
-transformations.forEach((transformation) => {
-  const lookFor = transformation[1];
-  const replacement = transformation[0];
-  const windowSize = lookFor.length;
+    for (let i = 0; i < molecule.length - windowSize + 1; i++) {
+      const lookingAt = molecule.slice(i, windowSize + i);
 
-  for (let i = 0; i < molecule.length - windowSize; i++) {
-    const lookingAt = molecule.slice(i, windowSize + i);
-
-    if (lookingAt === lookFor) {
-      possibleMolecules.add(
-        replaceInString(molecule, i, windowSize, replacement)
-      );
+      if (lookingAt === lookFor) {
+        molecule = replaceInString(molecule, i, windowSize, replacement);
+      }
     }
-  }
-});
+  });
+}
