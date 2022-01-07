@@ -19,8 +19,6 @@ const replaceInString = (
   return left + newStr + right;
 };
 
-console.log(molecule);
-
 while (molecule !== 'e') {}
 
 transformations.forEach((transformation) => {
