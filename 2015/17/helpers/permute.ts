@@ -1,3 +1,5 @@
+//permute function found here:
+//https://stackoverflow.com/questions/43241174/javascript-generating-all-combinations-of-elements-in-a-single-array-in-pairs
 function permute(valuesArray: number[]) {
   var combi = [];
   var temp = [];
