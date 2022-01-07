@@ -4,8 +4,6 @@ import prepareInput from './helpers/prepareInput';
 
 let [transformations, molecule] = prepareInput(input);
 
-// molecule = 'NThRnPBFAr';
-
 const replaceInString = (
   str: string,
   start: number,
@@ -22,6 +20,8 @@ const getPossibleMolecules = (molecules: Set<string>) => {
   const moleculeArr = Array.from(molecules);
 
   let possibleMolecules: string[] = [];
+
+  let minLen = Infinity;
 
   moleculeArr.forEach((molecule) => {
     transformations.forEach((transformation) => {
@@ -41,11 +41,11 @@ const getPossibleMolecules = (molecules: Set<string>) => {
     });
   });
 
-  possibleMolecules.sort((a, b) => {
+  possibleMolecules = possibleMolecules.sort((a, b) => {
     return a.length > b.length ? 1 : -1;
   });
 
-  return new Set(possibleMolecules.slice(0, 1000));
+  return new Set(possibleMolecules.slice(0, 150));
 };
 
 let possibleMolecules: Set<string> = new Set();
@@ -55,6 +55,7 @@ let times = 0;
 
 while (!possibleMolecules.has('e')) {
   possibleMolecules = getPossibleMolecules(possibleMolecules);
+  console.log(possibleMolecules.size);
 
   times++;
 }
