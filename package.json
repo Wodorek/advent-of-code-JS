@@ -19,5 +19,9 @@
   "homepage": "https://github.com/Wodorek/advent-of-code-JS#readme",
   "devDependencies": {
     "@types/node": "^17.0.5"
+  },
+  "dependencies": {
+    "@types/md5": "^2.3.1",
+    "md5": "^2.3.0"
   }
 }
