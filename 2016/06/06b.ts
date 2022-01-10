@@ -4,8 +4,6 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-console.log(inputArr);
-
 const counts: { [key: number]: { [key: string]: number } } = {};
 
 for (let i = 0; i < inputArr[0].length; i++) {
