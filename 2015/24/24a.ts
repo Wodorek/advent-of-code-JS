@@ -4,8 +4,6 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-const reversedArr = inputArr.reverse();
-
 let possibleCombos: number[][] = [[]];
 
 const maxWeight =
