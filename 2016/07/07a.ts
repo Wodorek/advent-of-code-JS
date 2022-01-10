@@ -4,6 +4,8 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
+//regex free solution!
+
 const checkTSLsupport = (ip: string) => {
   let left = 0;
   let leftEnd = 1;
