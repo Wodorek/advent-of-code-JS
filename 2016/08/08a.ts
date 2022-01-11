@@ -12,7 +12,7 @@ screen.fill([]);
 
 screen = screen.map((el) => {
   el.length = 50;
-  return el.fill('.');
+  return el.fill(' ');
 });
 
 const modifyScreen = (
@@ -88,6 +88,7 @@ const modifyScreen = (
 
 inputArr.forEach((instruction) => {
   screen = modifyScreen(screen, instruction);
+  printArr(screen);
 });
 
 printArr(screen);
