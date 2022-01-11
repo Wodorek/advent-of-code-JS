@@ -1,12 +1,5 @@
 import input from './input';
 
-const test1 = 'ADVENT';
-const test2 = 'A(1x5)BC';
-const test3 = '(3x3)XYZ';
-const test4 = 'A(2x2)BCD(2x2)EFG';
-const test5 = '(6x1)(1x3)A';
-const test6 = 'X(8x2)(3x3)ABCY';
-
 const parseString = (str: string) => {
   let outputStr = '';
 
@@ -51,11 +44,5 @@ const parseString = (str: string) => {
 
 console.log(parseString(input).length);
 
-console.log(parseString(test1) === 'ADVENT');
-console.log(parseString(test2) === 'ABBBBBC');
-console.log(parseString(test3) === 'XYZXYZXYZ');
-console.log(parseString(test4) === 'ABCBCDEFEFG');
-console.log(parseString(test5) === '(1x3)A');
-console.log(parseString(test6) === 'X(3x3)ABC(3x3)ABCY');
-
-console.log(parseString('xab(1x2)caaaaaa'));
+console.log(parseString('ADVENT\nA(1x5)BC').length);
+console.log(parseString('ADVENT\nA(1x5)BC'.replaceAll(/\s/g, '')).length);
