@@ -50,7 +50,6 @@ while (foundHashes < 64) {
   }
 
   idx++;
-  console.log(idx);
 }
 
 console.log(idx);
