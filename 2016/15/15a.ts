@@ -59,6 +59,6 @@ while (!canWin(initialDiscs, currTime)) {
   currTime++;
 }
 
-console.log(currTime);
+console.log(currTime); //400589
 
 console.log(canWin(initialDiscs, 5));
