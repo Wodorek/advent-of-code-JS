@@ -7,11 +7,7 @@ const bfs = () => {
 
   const queue: [number, number][] = [[1, 1]];
 
-  const totalMoves = [];
-
   const from: number[][][] = [];
-
-  let doneAdding = false;
 
   while (queue.length > 0) {
     const position = queue.pop()!;
@@ -26,11 +22,7 @@ const bfs = () => {
       const move = possibleMoves[i];
 
       if (!visited.includes(`${move[0]},${move[1]}`)) {
-        if (!doneAdding) {
-          queue.unshift(move);
-        }
-
-        totalMoves.push(move);
+        queue.unshift(move);
 
         if (from[move[0]]) {
           from[move[0]][move[1]] = position;
@@ -41,24 +33,29 @@ const bfs = () => {
       }
     }
 
-    //this hurts my brain
-    let nextStep: number[] | null =
-      from[from.length - 1][from[from.length - 1].length - 1];
-
+    let nextStep = null;
     let steps = 0;
+
+    if (from[position[0]]) {
+      nextStep = from[position[0]][position[1]];
+    }
 
     while (nextStep) {
       if (from[nextStep[0]]) {
         nextStep = from[nextStep[0]][nextStep[1]];
-        steps++;
-      } else nextStep = null;
+      } else {
+        nextStep = null;
+      }
+
+      steps++;
     }
 
-    if (steps >= 48) {
-      doneAdding = true;
+    if (steps > 50) {
+      break;
     }
   }
-  return new Set(visited).size + 1;
+
+  console.log(new Set(visited).size - 1);
 };
 
-console.log(bfs());
+bfs();
