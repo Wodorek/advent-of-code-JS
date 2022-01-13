@@ -9,8 +9,6 @@ const bfs = (to: [number, number]) => {
 
   const from: number[][][] = [];
 
-  let moves = 0;
-
   while (queue.length > 0) {
     const position = queue.pop()!;
 
