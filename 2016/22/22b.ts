@@ -25,8 +25,8 @@ elems.forEach((el) => {
   console.log(el.join(' '));
 });
 
-//this is solvable by hand. Print the "maze", look for an empty node, this is
-//  "our" position. Move "us" to the top left, beware of the triple digits wall, look for an opening counting spaces. next move the hole next to the top right corner, our target data (max -1 in equation), swap the data with the hole, and swap the hole back, so it is 1 position before the data, on the x axis, this takes 5 moves
+// this is solvable by hand. Print the "maze", look for an empty node, this is
+// our empty tile in a sliding puzzle. Move the window to the top left, beware of the triple digits wall, you can't pass those, look for an opening counting spaces. next move the hole next to the top right corner, our target data (max -1 in equation), swap the data with the hole, and swap the hole back, so it is 1 position before the data, on the x axis, this takes 5 moves
 
 const emptyNodeX = 3;
 const emptyNodeY = 20;
