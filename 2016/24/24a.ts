@@ -79,47 +79,47 @@ const bfs = (from: [number, number], to: [number, number]) => {
 //problematic step
 console.log(bfs(inputCoordinates['0'], inputCoordinates['2']));
 
-// const distances: { [key: string]: number } = {};
+const distances: { [key: string]: number } = {};
 
-// const locations = Object.keys(inputCoordinates);
+const locations = Object.keys(inputCoordinates);
 
-// let left = 0;
-// let right = 1;
+let left = 0;
+let right = 1;
 
-// while (left < locations.length - 1) {
-//   const from = locations[left];
-//   const to = locations[right];
+while (left < locations.length - 1) {
+  const from = locations[left];
+  const to = locations[right];
 
-//   console.log(left, right);
+  console.log(left, right);
 
-//   const distance = bfs(inputCoordinates[from], inputCoordinates[to]);
+  const distance = bfs(inputCoordinates[from], inputCoordinates[to]);
 
-//   distances[`${from},${to}`] = distance;
-//   distances[`${to},${from}`] = distance;
+  distances[`${from},${to}`] = distance;
+  distances[`${to},${from}`] = distance;
 
-//   if (right === locations.length - 1) {
-//     left++;
-//     right = left + 1;
-//   } else {
-//     right++;
-//   }
-// }
+  if (right === locations.length - 1) {
+    left++;
+    right = left + 1;
+  } else {
+    right++;
+  }
+}
 
-// let minDistance = Infinity;
+let minDistance = Infinity;
 
-// possibleRoutes.forEach((route) => {
-//   let left = 0;
-//   let right = 1;
+possibleRoutes.forEach((route) => {
+  let left = 0;
+  let right = 1;
 
-//   let totalDistance = 0;
+  let totalDistance = 0;
 
-//   while (right < route.length) {
-//     totalDistance += distances[`${route[left]},${route[right]}`];
-//     left++;
-//     right++;
-//   }
+  while (right < route.length) {
+    totalDistance += distances[`${route[left]},${route[right]}`];
+    left++;
+    right++;
+  }
 
-//   minDistance = Math.min(minDistance, totalDistance);
-// });
+  minDistance = Math.min(minDistance, totalDistance);
+});
 
-// console.log(minDistance);
+console.log('solution:', minDistance);
