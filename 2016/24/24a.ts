@@ -76,6 +76,7 @@ const bfs = (from: [number, number], to: [number, number]) => {
   return -1;
 };
 
+//problematic step
 console.log(bfs(inputCoordinates['0'], inputCoordinates['2']));
 
 // const distances: { [key: string]: number } = {};
