@@ -1,9 +1,7 @@
 import input from './input';
-
 import prepareInput from './helpers/prepareInput';
 import neighbors from './helpers/neighbors';
 import permute from './helpers/permute';
-import path from 'path/posix';
 
 const inputArr = prepareInput(input);
 
