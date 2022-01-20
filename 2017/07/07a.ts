@@ -9,7 +9,7 @@ const filtered = inputArr.filter((el) => {
   return el[1];
 });
 
-// check which program is not being hold by any other program
+// check which program is not being held by any other program
 
 for (let i = 0; i < filtered.length; i++) {
   const program = filtered[i][0][0];
