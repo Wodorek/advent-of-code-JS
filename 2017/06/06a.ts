@@ -4,8 +4,6 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-const testArr = [0, 2, 7, 0];
-
 const redistribute = (bank: number[]) => {
   const newBank = [...bank];
   let value = Math.max(...newBank);
