@@ -33,8 +33,6 @@ const getWeights = (root: string) => {
   }
 };
 
-let pastNodes = [];
-let pastWeights = [];
 let pastOverweight = 0;
 let pastCorrect = 0;
 let currNode = 'ykpsek';
@@ -72,7 +70,5 @@ while (true) {
   })!;
 
   currNode = nodes[weights.indexOf(overweightBranch)];
-  pastNodes = nodes;
-  pastWeights = weights;
   pastOverweight = overweightBranch;
 }
