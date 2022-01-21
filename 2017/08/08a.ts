@@ -63,6 +63,4 @@ inputArr.forEach((instruction) => {
   executeInstruction(instruction);
 });
 
-console.log(registers);
-
 console.log(Math.max(...Object.values(registers)));
