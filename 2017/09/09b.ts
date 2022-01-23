@@ -63,24 +63,6 @@ const removeGarbage = (str: string) => {
   return totalGarbage;
 };
 
-const countPoints = (str: string) => {
-  let totalPoints = 0;
-  let pointValue = 1;
-
-  str.split('').forEach((el) => {
-    if (el === '{') {
-      totalPoints += pointValue;
-      pointValue++;
-    }
-
-    if (el === '}') {
-      pointValue--;
-    }
-  });
-
-  return totalPoints;
-};
-
 const withRemovedBangs = removeBangs(input);
 
 console.log(removeGarbage(withRemovedBangs));
