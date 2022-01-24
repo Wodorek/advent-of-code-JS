@@ -65,6 +65,5 @@ const tests = inputArr;
 
 tests.forEach((el) => {
   arr = executeInstruction(arr, position, el);
-  console.log(arr);
 });
 console.log(arr[0] * arr[1]);
