@@ -102,7 +102,7 @@ for (let i = 0; i < rope.length; i++) {
 
 const knotHash = denseHash
   .map((el) => {
-    return el.toString(16);
+    return el.toString(16).padStart(2, '0');
   })
   .join('');
 
