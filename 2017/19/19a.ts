@@ -7,9 +7,6 @@ const inputArr = prepareInput(input);
 
 let currentPosition = [0, inputArr[0].indexOf('|')];
 
-const [row, col] = currentPosition;
-
-let lookFor = '|';
 let moveDir = [1, 0];
 
 let escaped = false;
