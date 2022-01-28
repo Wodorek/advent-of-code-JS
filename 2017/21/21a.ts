@@ -51,9 +51,6 @@ const divideIntoTiles = (matrix: string[][], size: number) => {
     slices.push(matrix.slice(i, i + size));
   }
 
-  console.log('slices:');
-  console.log(slices);
-
   slices.forEach((slice) => {
     const newTiles = [];
 
@@ -71,13 +68,7 @@ const divideIntoTiles = (matrix: string[][], size: number) => {
     tiles = [...tiles, ...newTiles];
   });
 
-  console.log('tls', tiles);
-
   return tiles;
-
-  // return tiles.filter((el) => {
-  //   return el[0][0] !== undefined;
-  // });
 };
 
 const getOutputString = (matrix: string[][]) => {
@@ -96,17 +87,11 @@ const getOutputString = (matrix: string[][]) => {
 const processMatrix = (matrix: string[][]) => {
   const size = matrix.length % 2 === 0 ? 2 : 3;
 
-  console.log('siz', size);
-
   const tiles = divideIntoTiles(matrix, size);
-
-  console.log('til', tiles);
 
   const processed = tiles.map((tile) => {
     return stringToMatrix(getOutputString(tile));
   });
-
-  console.log('proc', processed.length);
 
   const tileSize = processed[0][0].length;
 
@@ -137,8 +122,6 @@ let matrix = initialMatrix;
 
 for (let i = 0; i < 5; i++) {
   matrix = processMatrix(matrix);
-
-  console.log(matrix);
 }
 
 let totalLit = 0;
