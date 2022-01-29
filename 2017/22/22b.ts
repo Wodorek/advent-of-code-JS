@@ -4,12 +4,6 @@ import prepareInput from './helpers/prepareInput';
 
 let inputArr = prepareInput(input);
 
-// const inputArr = [
-//   ['.', '.', '#'],
-//   ['#', '.', '.'],
-//   ['.', '.', '.'],
-// ];
-
 const infectedNodes: { [key: string]: string } = {};
 
 for (let i = 0; i < inputArr.length; i++) {

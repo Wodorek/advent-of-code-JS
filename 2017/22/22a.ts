@@ -4,12 +4,6 @@ import prepareInput from './helpers/prepareInput';
 
 let inputArr = prepareInput(input);
 
-let testArr = [
-  ['.', 'a', '.'],
-  ['d', '.', 'b'],
-  ['.', 'c', '.'],
-];
-
 class InfectionVector {
   position: {
     row: number;
