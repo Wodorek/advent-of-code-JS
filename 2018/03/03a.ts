@@ -16,7 +16,7 @@ for (let i = 0; i < 1000; i++) {
 }
 
 inputArr.forEach((el) => {
-  const [[startCol, startRow], [sizeCol, sizeRow]] = el;
+  const [_, [startCol, startRow], [sizeCol, sizeRow]] = el;
 
   for (let row = startRow; row < startRow + sizeRow; row++) {
     for (let col = startCol; col < startCol + sizeCol; col++) {
