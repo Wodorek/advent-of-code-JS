@@ -13,28 +13,30 @@ for (let i = 0; i < 1000; i++) {
   fabric.push(fabricRow);
 }
 
+const overlaps = new Set();
+
 inputArr.forEach((el) => {
-  const [_, [startCol, startRow], [sizeCol, sizeRow]] = el;
+  const [claimId, [startCol, startRow], [sizeCol, sizeRow]] = el;
 
   for (let row = startRow; row < startRow + sizeRow; row++) {
     for (let col = startCol; col < startCol + sizeCol; col++) {
       if (fabric[row][col] === '.') {
-        fabric[row][col] = '#';
+        fabric[row][col] = `${claimId}`;
       } else {
+        overlaps.add(claimId);
+        overlaps.add(+fabric[row][col]);
         fabric[row][col] = 'X';
       }
     }
   }
 });
 
-let totalOverlap = 0;
-
-fabric.forEach((line) => {
-  line.forEach((el) => {
-    if (el === 'X') {
-      totalOverlap++;
-    }
-  });
+const claimIds = inputArr.map((el) => {
+  return el[0];
 });
 
-console.log(totalOverlap);
+const filtered = claimIds.filter((el) => {
+  return !overlaps.has(el);
+});
+
+console.log(filtered);
