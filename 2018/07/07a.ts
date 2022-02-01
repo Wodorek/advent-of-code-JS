@@ -4,8 +4,6 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-console.log(inputArr);
-
 const mapping: { [key: string]: string[] } = {};
 
 inputArr.forEach((el) => {
