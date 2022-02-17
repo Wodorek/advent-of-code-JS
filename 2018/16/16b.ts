@@ -1,12 +1,13 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
+import part2 from './part2';
 
-const inputArr = prepareInput(input);
+let inputArr = prepareInput(input);
 
 console.log(inputArr[inputArr.length - 1]);
 
-const possibleOperations = [
+let possibleOperations = [
   'addr',
   'addi',
   'mulr',
@@ -28,7 +29,6 @@ const possibleOperations = [
 const processOperations = (
   operation: string,
   before: number[],
-  after: number[],
   A: number,
   B: number,
   C: number
@@ -99,37 +99,67 @@ const processOperations = (
     newRegisters[C] = before[A] === before[B] ? 1 : 0;
   }
 
-  return newRegisters.join('') === after.join('');
+  return newRegisters;
 };
 
 const count = (
   before: number[],
   after: number[],
+  idx: number,
   A: number,
   B: number,
   C: number
 ) => {
-  let matching = 0;
+  let matching: string[][] = [];
 
   possibleOperations.forEach((operation) => {
-    const isPossible = processOperations(operation, before, after, A, B, C);
+    const processed = processOperations(operation, before, A, B, C);
 
-    if (isPossible) {
-      matching++;
+    if (processed.join('') === after.join('')) {
+      matching.push([idx.toString(), operation]);
     }
   });
 
-  return matching >= 3;
+  return matching;
 };
 
 let total = 0;
 
-inputArr.forEach((el) => {
-  const isHigher = count(el[0], el[2], el[1][1], el[1][2], el[1][3]);
+const mapped: { [key: string]: string } = {};
 
-  if (isHigher) {
-    total++;
-  }
+while (Object.keys(mapped).length < 16) {
+  inputArr.forEach((el) => {
+    const matches = count(el[0], el[2], el[1][0], el[1][1], el[1][2], el[1][3]);
+
+    if (matches.length === 1) {
+      mapped[matches[0][0]] = matches[0][1];
+    }
+  });
+
+  const found = Object.values(mapped);
+  const vals = Object.keys(mapped).map(Number);
+
+  possibleOperations = possibleOperations.filter((el) => {
+    return !found.includes(el);
+  });
+
+  inputArr = inputArr.filter((el) => {
+    return !vals.includes(el[1][0]);
+  });
+}
+
+console.log(mapped);
+
+let registers = [0, 0, 0, 0];
+
+part2.forEach((instruction) => {
+  registers = processOperations(
+    mapped[instruction[0]],
+    registers,
+    instruction[1],
+    instruction[2],
+    instruction[3]
+  );
 });
 
-console.log(total);
+console.log(registers[0]);
