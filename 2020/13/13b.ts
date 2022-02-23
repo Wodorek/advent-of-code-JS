@@ -3,8 +3,6 @@ import prepareInput from './helpers/prepareInput';
 
 let inputArr = prepareInput(input);
 
-console.log(inputArr);
-
 const timeOffsets = inputArr[1]
   .map((el, idx) => {
     if (!isNaN(+el)) {
@@ -21,27 +19,39 @@ const buses = inputArr[1]
   })
   .map(Number);
 
-// or buses[0] for examples
-let time = 100000000000000;
-
-while (time % buses[0] !== 0) {
-  time++;
-}
-
-console.log(time);
-
-const checkTimes = (buses: number[], times: number[]) => {
+const checkTimes = (buses: number[], times: number[], currTime: number) => {
   const matches = buses.every((bus, idx) => {
-    return (time + times[idx]) % bus === 0;
+    return (currTime + times[idx]) % bus === 0;
   });
 
   return matches;
 };
 
+let time = 0;
+let times = [];
+let sliceSize = 1;
+let dt = 1;
+
 while (true) {
-  if (checkTimes(buses, timeOffsets)) {
-    console.log(time);
-    break;
+  if (
+    checkTimes(
+      buses.slice(0, sliceSize + 1),
+      timeOffsets.slice(0, sliceSize + 1),
+      time
+    )
+  ) {
+    times.push(time);
+
+    if (times.length === 2) {
+      dt = times[1] - times[0];
+      times = [];
+      sliceSize++;
+    }
+
+    if (sliceSize === buses.length) {
+      console.log('timestamp:', time - dt);
+      break;
+    }
   }
-  time += buses[0];
+  time += dt;
 }
