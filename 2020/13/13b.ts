@@ -21,6 +21,7 @@ const buses = inputArr[1]
   })
   .map(Number);
 
+// or buses[0] for examples
 let time = 100000000000000;
 
 while (time % buses[0] !== 0) {
