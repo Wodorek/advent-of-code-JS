@@ -35,11 +35,7 @@ const checkTimes = (buses: number[], times: number[]) => {
     return (time + times[idx]) % bus === 0;
   });
 
-  if (matches) {
-    return true;
-  } else {
-    return false;
-  }
+  return matches;
 };
 
 while (true) {
