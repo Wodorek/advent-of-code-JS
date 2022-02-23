@@ -5,7 +5,7 @@ let inputArr = prepareInput(input);
 
 console.log(inputArr);
 
-const timeDiffs = inputArr[1]
+const timeOffsets = inputArr[1]
   .map((el, idx) => {
     if (!isNaN(+el)) {
       return idx;
@@ -43,7 +43,7 @@ const checkTimes = (buses: number[], times: number[]) => {
 };
 
 while (true) {
-  if (checkTimes(buses, timeDiffs)) {
+  if (checkTimes(buses, timeOffsets)) {
     console.log(time);
     break;
   }
