@@ -6,10 +6,11 @@ const prepareInput = (input: string) => {
 
   const fields = split.slice(0, firstSeparator).map((el) => {
     const split = el.split(' ');
+    const mod = split[0][split[0].length - 1] === ':' ? 0 : 1;
     return [
-      split[0].replace(':', ''),
-      split[1].split('-').map(Number),
-      split[3].split('-').map(Number),
+      mod === 1 ? `${split[0]} ${split[1]}` : split[0],
+      split[1 + mod].split('-').map(Number),
+      split[3 + mod].split('-').map(Number),
     ];
   });
 

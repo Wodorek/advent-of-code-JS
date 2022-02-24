@@ -16,8 +16,6 @@ fields.forEach((field) => {
   }
 });
 
-console.log(nearbyTickets);
-
 let errorRate = 0;
 
 nearbyTickets.forEach((ticket) => {
