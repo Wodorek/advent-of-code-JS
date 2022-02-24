@@ -16,12 +16,16 @@ fields.forEach((field) => {
   }
 });
 
+console.log(nearbyTickets);
+
 let errorRate = 0;
 
 nearbyTickets.forEach((ticket) => {
-  if (!possibleFields.has(ticket)) {
-    errorRate += ticket;
-  }
+  ticket.forEach((num) => {
+    if (!possibleFields.has(num)) {
+      errorRate += num;
+    }
+  });
 });
 
 console.log(errorRate);
