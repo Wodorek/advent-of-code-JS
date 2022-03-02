@@ -14,44 +14,24 @@ const drawLines = (line: string[], idx: number) => {
     const direction = segment[0];
     const distance = +segment.slice(1);
 
-    if (direction === 'U') {
-      for (let i = currY; i <= currY + distance; i++) {
-        if (!lineSegments[`${currX},${i}`]) {
-          lineSegments[`${currX},${i}`] = new Set();
-        }
-        lineSegments[`${currX},${i}`].add(idx);
+    for (let i = 0; i < distance; i++) {
+      if (!lineSegments[`${currX},${currY}`]) {
+        lineSegments[`${currX},${currY}`] = new Set();
       }
-      currY += distance;
-    }
+      lineSegments[`${currX},${currY}`].add(idx);
 
-    if (direction === 'D') {
-      for (let i = currY - distance; i <= currY; i++) {
-        if (!lineSegments[`${currX},${i}`]) {
-          lineSegments[`${currX},${i}`] = new Set();
-        }
-        lineSegments[`${currX},${i}`].add(idx);
+      if (direction === 'U') {
+        currY++;
       }
-      currY -= distance;
-    }
-
-    if (direction === 'R') {
-      for (let i = currX; i <= currX + distance; i++) {
-        if (!lineSegments[`${i},${currY}`]) {
-          lineSegments[`${i},${currY}`] = new Set();
-        }
-        lineSegments[`${i},${currY}`].add(idx);
+      if (direction === 'D') {
+        currY--;
       }
-      currX += distance;
-    }
-
-    if (direction === 'L') {
-      for (let i = currX - distance; i <= currX; i++) {
-        if (!lineSegments[`${i},${currY}`]) {
-          lineSegments[`${i},${currY}`] = new Set();
-        }
-        lineSegments[`${i},${currY}`].add(idx);
+      if (direction === 'R') {
+        currX++;
       }
-      currX -= distance;
+      if (direction === 'L') {
+        currX--;
+      }
     }
   });
 };
