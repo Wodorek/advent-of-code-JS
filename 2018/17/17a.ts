@@ -10,10 +10,7 @@ let inputArr = prepareInput(input);
 
 const minX = getMin(inputArr, 'x');
 const minY = getMin(inputArr, 'y');
-
-console.log(minX, minY);
-
-console.log(inputArr);
+const spring = 500 - minX;
 
 const reduceArraySize = (
   arr: coordinate[],
@@ -62,6 +59,96 @@ const createMap = (coordinates: coordinate[]) => {
 
 const groundSlice = createMap(mapped);
 
-// groundSlice.forEach((el) => {
-//   console.log(el.join(' '));
-// });
+const pourWater = (arr: string[][], x: number, y: number) => {
+  groundSlice.forEach((el) => {
+    console.log(el.join(' '));
+  });
+  let bottom = y;
+
+  while (arr[bottom][x] !== '#') {
+    arr[bottom][x] = '|';
+
+    bottom++;
+    if (bottom === arr.length) {
+      return;
+    }
+  }
+
+  bottom--;
+
+  let left = x;
+  let right = x;
+
+  let stop = false;
+
+  const overflow = [0, 0];
+  let filled = 0;
+
+  for (let i = bottom - y; i >= 0; i--) {
+    if (stop) {
+      break;
+    }
+    left = x;
+    right = x;
+    while (arr[y + i][left] !== '#' && arr[y + i + 1][left - 1] !== '.') {
+      arr[y + i][left] = '~';
+      left--;
+      if (arr[y + i][left] !== '#' && arr[y + i + 1][left - 1] === '.') {
+        stop = true;
+      }
+    }
+
+    while (
+      arr[y + i][right] &&
+      arr[y + i][right] !== '#' &&
+      arr[y + i + 1][right + 1] !== '.'
+    ) {
+      arr[y + i][right] = '~';
+      right++;
+      if (arr[y + i][right] !== '#' && arr[y + i + 1][right + 1] === '.') {
+        stop = true;
+      }
+    }
+    filled++;
+  }
+
+  if (arr[bottom - filled + 1][left] === '.') {
+    overflow[0] = 1;
+  }
+
+  if (arr[bottom - filled + 1][right] === '.') {
+    overflow[1] = 1;
+  }
+
+  if (overflow[0] === 0 && overflow[1] === 0) {
+    pourWater(arr, x, y - 1);
+  }
+
+  if (overflow[1] === 1) {
+    arr[bottom - filled + 1][right] = '~';
+    pourWater(arr, right + 1, bottom - filled + 1);
+  }
+
+  if (overflow[0] === 1) {
+    arr[bottom - filled + 1][left] = '~';
+    pourWater(arr, left - 1, bottom - filled + 1);
+  }
+};
+
+pourWater(groundSlice, 500 - minX, 0);
+
+groundSlice.forEach((el) => {
+  console.log(el.join(' '));
+});
+
+let total = 0;
+
+groundSlice.forEach((line) => {
+  line.forEach((el) => {
+    if (el === '|' || el === '~') {
+      total++;
+    }
+  });
+});
+
+console.log(total);
