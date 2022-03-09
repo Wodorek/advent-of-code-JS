@@ -87,8 +87,6 @@ class SnailNum {
 
     let asStr = JSON.stringify(this.turnIntoArr());
 
-    console.log('before', asStr);
-
     const exp = asStr.slice(idx + 1, idx + 4);
 
     const split = exp.split(',');
@@ -127,8 +125,6 @@ class SnailNum {
 
     asStr = asStr.substring(0, idx) + '0' + asStr.substring(idx + 5);
 
-    console.log('after', asStr);
-
     return [new SnailNum(eval(asStr)[0], eval(asStr)[1], 0), true] as [
       SnailNum,
       boolean
@@ -153,17 +149,13 @@ class SnailNum {
             2,
             ...`[${Math.floor(num / 2)},${Math.ceil(num / 2)}]`
           );
-          idx = 0;
           hasSplit = true;
+          break;
         } else {
           idx++;
         }
       }
     }
-
-    const joined = asArr.join('');
-
-    console.log(joined);
 
     return [
       new SnailNum(eval(asArr.join(''))[0], eval(asArr.join(''))[1], 0),
@@ -182,6 +174,9 @@ snail = snail.add(new SnailNum([1, 1][0], [1, 1][1], 0));
 snail = snail.explode()[0];
 snail = snail.explode()[0];
 snail = snail.split()[0];
+snail = snail.split()[0];
 snail = snail.explode()[0];
 
-console.log(`${snail.turnIntoArr()}`);
+console.log(
+  JSON.stringify(snail.turnIntoArr()) === '[[[[0,7],4],[[7,8],[6,0]]],[8,1]]'
+);
