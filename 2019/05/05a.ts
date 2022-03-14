@@ -57,6 +57,8 @@ while (shoudContinue) {
   shoudContinue = executeCode(inputArr, 1);
 }
 
+console.log(memory);
+
 console.log(
   memory[memory.length - 1].params.filter((el) => {
     return el > 100000;
