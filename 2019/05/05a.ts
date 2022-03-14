@@ -12,8 +12,6 @@ const executeCode = (list: number[], input: number) => {
   const asStr = list[currPos].toString().padStart(5, '0');
   const opcode = parseInt(asStr.slice(3));
 
-  console.log(opcode);
-
   if (isNaN(opcode)) {
     console.log('WARN', opcode);
   }
@@ -50,8 +48,6 @@ const executeCode = (list: number[], input: number) => {
     return false;
   }
 
-  //remember that
-
   return true;
 };
 
@@ -63,6 +59,6 @@ while (shoudContinue) {
 
 console.log(
   memory[memory.length - 1].params.filter((el) => {
-    return el > 1000;
+    return el > 100000;
   })[0]
 );
