@@ -15,27 +15,53 @@ inputArr.forEach((orbit) => {
   orbits[center].push(orbit[1]);
 });
 
-let totalOrbits = 0;
+const findOrbitsChain = (planet: string) => {
+  const orbitChain = [];
 
-let san = 0;
-let you = 0;
+  const planetsWithOrbits = Object.keys(orbits);
 
-const countOrbiting = (planet: string, depth: number) => {
-  totalOrbits += depth;
+  let shouldContinue = true;
+  let lookingFor = planet;
+  while (true) {
+    shouldContinue = false;
+    for (let i = 0; i < planetsWithOrbits.length; i++) {
+      const possible = planetsWithOrbits[i];
 
-  if (planet === 'SAN') {
-    san = depth;
+      if (orbits[possible].includes(lookingFor)) {
+        orbitChain.push(possible);
+        lookingFor = possible;
+        shouldContinue = true;
+        break;
+      }
+    }
+
+    if (!shouldContinue) {
+      break;
+    }
   }
 
-  if (planet === 'YOU') {
-    you = depth;
-  }
-
-  if (orbits[planet]) {
-    orbits[planet].forEach((orbit) => {
-      countOrbiting(orbit, depth + 1);
-    });
-  }
+  return orbitChain;
 };
 
-console.log(orbits);
+const findDistanceBetween = (planet1: string, planet2: string) => {
+  const p1OrbitChain = findOrbitsChain(planet1);
+  const p2OrbitChain = findOrbitsChain(planet2);
+
+  let firstCommonOrbit = '';
+
+  for (let i = 0; i < p1OrbitChain.length; i++) {
+    const planet = p1OrbitChain[i];
+
+    if (p2OrbitChain.includes(planet)) {
+      firstCommonOrbit = planet;
+      break;
+    }
+  }
+
+  return (
+    p1OrbitChain.indexOf(firstCommonOrbit) +
+    p2OrbitChain.indexOf(firstCommonOrbit)
+  );
+};
+
+console.log(findDistanceBetween('SAN', 'YOU'));
