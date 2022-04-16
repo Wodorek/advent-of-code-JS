@@ -10,21 +10,6 @@ const phases = [0, 1, 2, 3, 4];
 
 const permutations = permute(phases);
 
-const test = [1, 0, 4, 3, 2];
-
-const outputs: number[] = [];
-
-test.forEach((input, idx) => {
-  const vm = new VM(inputArr);
-
-  let shouldContinue = true;
-  const inputs = [input, outputs[idx - 1] || 0];
-
-  while (shouldContinue) {
-    shouldContinue = vm.exectuteOperation(inputs, outputs);
-  }
-});
-
 const maxOutputs: number[] = [];
 
 permutations.forEach((permutation) => {
