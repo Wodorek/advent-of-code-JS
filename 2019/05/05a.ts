@@ -6,8 +6,6 @@ const inputArr = prepareInput(input);
 
 let currPos = 0;
 
-const memory: { currPos: number; opcode: number; params: number[] }[] = [];
-
 const executeCode = (list: number[], input: number) => {
   const asStr = list[currPos].toString().padStart(5, '0');
   const opcode = parseInt(asStr.slice(3));
@@ -20,7 +18,6 @@ const executeCode = (list: number[], input: number) => {
   const param2 = asStr[1] === '0' ? list[currPos + 2] : currPos + 2;
   const writeTo = asStr[0] === '0' ? list[currPos + 3] : currPos + 3;
 
-  memory.push({ currPos, opcode, params: [param1, param2, writeTo] });
   if (opcode === 1) {
     list[writeTo] = list[param1] + list[param2];
     currPos += 4;
@@ -37,9 +34,7 @@ const executeCode = (list: number[], input: number) => {
   }
 
   if (opcode === 4) {
-    if (list[writeTo] !== 0) {
-      console.log(list[writeTo]);
-    }
+    console.log(list[param1]);
 
     currPos += 2;
   }
@@ -56,11 +51,3 @@ let shoudContinue = true;
 while (shoudContinue) {
   shoudContinue = executeCode(inputArr, 1);
 }
-
-console.log(memory);
-
-console.log(
-  memory[memory.length - 1].params.filter((el) => {
-    return el > 100000;
-  })[0]
-);
