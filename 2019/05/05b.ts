@@ -11,4 +11,4 @@ while (vm.working) {
   vm.executeInstruction(5);
 }
 
-console.log(vm.outputs);
+console.log(vm.outputs[vm.outputs.length - 1]);
