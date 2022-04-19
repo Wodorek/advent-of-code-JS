@@ -83,6 +83,7 @@ export class VM {
     },
 
     99: () => {
+      this.lastCommand = 99;
       this.working = false;
     },
   };

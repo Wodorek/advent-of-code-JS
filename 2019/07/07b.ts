@@ -1,33 +1,80 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
-import VM from '../computer/VM';
-import permute from './helpers/permute';
+import { VM } from '../computer/VM';
 
 const inputArr = prepareInput(input);
 
-const phases = [5,6,7,8,9];
-
-const permutations = permute(phases);
-
-const maxOutputs: number[] = [];
+const permutations = [[9, 7, 8, 5, 6]];
 
 permutations.forEach((permutation) => {
-  const outputs: number[] = [];
+  console.log('p start');
+  const machines = {
+    vmA: {
+      machine: new VM(inputArr),
+      inputs: [permutation[0], 0],
+    },
+    vmB: {
+      machine: new VM(inputArr),
+      inputs: [permutation[1]],
+    },
+    vmC: {
+      machine: new VM(inputArr),
+      inputs: [permutation[2]],
+    },
+    vmD: {
+      machine: new VM(inputArr),
+      inputs: [permutation[3]],
+    },
+    vmE: {
+      machine: new VM(inputArr),
+      inputs: [permutation[4]],
+    },
+  };
 
-  permutation.forEach((phase, idx) => {
-    const inputs = [phase, outputs[idx - 1] || 0];
+  type MachineKey = keyof typeof machines;
 
-    let shouldContinue = true;
+  let currMachine: MachineKey = 'vmA';
 
-    const vm = new VM(inputArr);
+  function advanceMachine(currMachine: MachineKey): MachineKey {
+    const machinesOrder: MachineKey[] = ['vmA', 'vmB', 'vmC', 'vmD', 'vmE'];
 
-    while (shouldContinue) {
-      shouldContinue = vm.exectuteOperation(inputs, outputs);
+    const machineIndex = machinesOrder.indexOf(currMachine);
+
+    if (machineIndex === 4) {
+      return machinesOrder[0];
+    } else {
+      return machinesOrder[machineIndex + 1];
     }
-  });
+  }
 
-  maxOutputs.push(outputs[outputs.length - 1]);
+  while (true) {
+    const workingMachine = machines[currMachine];
+
+    workingMachine.machine.executeInstruction(
+      workingMachine.inputs[workingMachine.machine.inputIdx]
+    );
+
+    console.log(
+      `Machine ${currMachine} executed command ${
+        workingMachine.machine.lastCommand
+      }, with input ${workingMachine.inputs[workingMachine.machine.inputIdx]}`
+    );
+
+    if (workingMachine.machine.lastCommand === 3) {
+      workingMachine.machine.inputIdx++;
+    }
+
+    if (workingMachine.machine.lastCommand === 4) {
+      machines[advanceMachine(currMachine)].inputs.push(
+        workingMachine.machine.getLastOutput
+      );
+      currMachine = advanceMachine(currMachine);
+    }
+
+    if (!workingMachine.machine.working) {
+      break;
+    }
+  }
+  console.log(machines[currMachine]);
 });
-
-console.log(Math.max(...maxOutputs));
