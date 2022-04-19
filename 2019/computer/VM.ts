@@ -3,12 +3,16 @@ export class VM {
   pointer: number;
   working: boolean;
   outputs: number[];
+  lastCommand: number;
+  inputIdx: number;
 
   constructor(memory: number[]) {
     this.memory = memory;
     this.pointer = 0;
     this.working = true;
     this.outputs = [];
+    this.lastCommand = 0;
+    this.inputIdx = 0;
   }
 
   ops = {
@@ -16,24 +20,28 @@ export class VM {
       this.memory[p3] = this.memory[p1] + this.memory[p2];
 
       this.pointer += 4;
+      this.lastCommand = 1;
     },
 
     2: (p1: number, p2: number, p3: number) => {
       this.memory[p3] = this.memory[p1] * this.memory[p2];
 
       this.pointer += 4;
+      this.lastCommand = 2;
     },
 
     3: (p1: number, p2: number, p3: number, input: number) => {
       this.memory[p1] = input;
 
       this.pointer += 2;
+      this.lastCommand = 3;
     },
 
     4: (p1: number) => {
       this.outputs.push(this.memory[p1]);
 
       this.pointer += 2;
+      this.lastCommand = 4;
     },
 
     5: (p1: number, p2: number) => {
@@ -42,6 +50,7 @@ export class VM {
       } else {
         this.pointer += 3;
       }
+      this.lastCommand = 5;
     },
 
     6: (p1: number, p2: number) => {
@@ -50,6 +59,7 @@ export class VM {
       } else {
         this.pointer += 3;
       }
+      this.lastCommand = 6;
     },
 
     7: (p1: number, p2: number, p3: number) => {
@@ -59,6 +69,7 @@ export class VM {
         this.memory[p3] = 0;
       }
       this.pointer += 4;
+      this.lastCommand = 7;
     },
 
     8: (p1: number, p2: number, p3: number) => {
@@ -68,6 +79,7 @@ export class VM {
         this.memory[p3] = 0;
       }
       this.pointer += 4;
+      this.lastCommand = 8;
     },
 
     99: () => {
@@ -87,5 +99,9 @@ export class VM {
       asStr[0] === '0' ? this.memory[this.pointer + 3] : this.pointer + 3;
 
     this.ops[opcode](param1, param2, param3, input);
+  }
+
+  get getLastOutput() {
+    return this.outputs[this.outputs.length - 1];
   }
 }
