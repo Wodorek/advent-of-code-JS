@@ -2,13 +2,15 @@ import input from './input';
 
 import prepareInput from './helpers/prepareInput';
 import { VM } from '../computer/VM';
+import permute from './helpers/permute';
 
 const inputArr = prepareInput(input);
 
-const permutations = [[9, 7, 8, 5, 6]];
+const permutations = permute(inputArr);
+
+let maxThrust = -Infinity;
 
 permutations.forEach((permutation) => {
-  console.log('p start');
   const machines = {
     vmA: {
       machine: new VM(inputArr),
@@ -34,8 +36,6 @@ permutations.forEach((permutation) => {
 
   type MachineKey = keyof typeof machines;
 
-  let currMachine: MachineKey = 'vmA';
-
   function advanceMachine(currMachine: MachineKey): MachineKey {
     const machinesOrder: MachineKey[] = ['vmA', 'vmB', 'vmC', 'vmD', 'vmE'];
 
@@ -48,17 +48,13 @@ permutations.forEach((permutation) => {
     }
   }
 
+  let currMachine: MachineKey = 'vmA';
+
   while (true) {
     const workingMachine = machines[currMachine];
 
     workingMachine.machine.executeInstruction(
       workingMachine.inputs[workingMachine.machine.inputIdx]
-    );
-
-    console.log(
-      `Machine ${currMachine} executed command ${
-        workingMachine.machine.lastCommand
-      }, with input ${workingMachine.inputs[workingMachine.machine.inputIdx]}`
     );
 
     if (workingMachine.machine.lastCommand === 3) {
@@ -76,5 +72,12 @@ permutations.forEach((permutation) => {
       break;
     }
   }
-  console.log(machines[currMachine]);
+
+  const thrust = machines[currMachine].machine.getLastOutput;
+
+  if (maxThrust < thrust) {
+    maxThrust = thrust;
+  }
 });
+
+console.log(maxThrust);
