@@ -1,12 +1,14 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
-import { VM } from '../computer/VM';
 import permute from './helpers/permute';
+import { VM } from '../computer/VM';
 
 const inputArr = prepareInput(input);
 
-const permutations = permute(inputArr);
+const phases = [5, 6, 7, 8, 9];
+
+const permutations = permute(phases);
 
 let maxThrust = -Infinity;
 
@@ -36,6 +38,8 @@ permutations.forEach((permutation) => {
 
   type MachineKey = keyof typeof machines;
 
+  let currMachine: MachineKey = 'vmA';
+
   function advanceMachine(currMachine: MachineKey): MachineKey {
     const machinesOrder: MachineKey[] = ['vmA', 'vmB', 'vmC', 'vmD', 'vmE'];
 
@@ -47,8 +51,6 @@ permutations.forEach((permutation) => {
       return machinesOrder[machineIndex + 1];
     }
   }
-
-  let currMachine: MachineKey = 'vmA';
 
   while (true) {
     const workingMachine = machines[currMachine];
@@ -73,11 +75,10 @@ permutations.forEach((permutation) => {
     }
   }
 
-  const thrust = machines[currMachine].machine.getLastOutput;
-
-  if (maxThrust < thrust) {
-    maxThrust = thrust;
-  }
+  maxThrust = Math.max(
+    maxThrust,
+    machines[currMachine].inputs[machines[currMachine].inputs.length - 1]
+  );
 });
 
 console.log(maxThrust);

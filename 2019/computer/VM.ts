@@ -7,7 +7,7 @@ export class VM {
   inputIdx: number;
 
   constructor(memory: number[]) {
-    this.memory = memory;
+    this.memory = [...memory];
     this.pointer = 0;
     this.working = true;
     this.outputs = [];
