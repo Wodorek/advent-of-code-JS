@@ -17,6 +17,7 @@ export class VM {
   }
 
   ops = {
+    //needs rewrite
     1: (p1: number, p2: number, p3: number) => {
       this.memory[p3] = this.memory[p1] + this.memory[p2];
 
