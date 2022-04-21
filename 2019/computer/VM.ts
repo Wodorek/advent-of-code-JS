@@ -5,6 +5,7 @@ export class VM {
   outputs: number[];
   lastCommand: number;
   inputIdx: number;
+  //refrence itself?
 
   constructor(memory: number[]) {
     this.memory = memory;
