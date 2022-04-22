@@ -8,7 +8,7 @@ export class VM {
   relativeBase: number;
 
   constructor(memory: number[]) {
-    this.memory = [...memory, 0];
+    this.memory = [...memory];
     this.pointer = 0;
     this.working = true;
     this.outputs = [];
@@ -106,7 +106,7 @@ export class VM {
     }
 
     if (mode === '2') {
-      return this.memory[this.relativeBase + offset];
+      return this.memory[this.pointer + offset] + this.relativeBase;
     }
 
     return -1;
