@@ -1,14 +1,18 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
+import permute from './helpers/permute';
 import { VM } from '../computer/VM';
 
 const inputArr = prepareInput(input);
 
-const permutations = [[9, 7, 8, 5, 6]];
+const phases = [5, 6, 7, 8, 9];
+
+const permutations = permute(phases);
+
+let maxThrust = -Infinity;
 
 permutations.forEach((permutation) => {
-  console.log('p start');
   const machines = {
     vmA: {
       machine: new VM(inputArr),
@@ -55,12 +59,6 @@ permutations.forEach((permutation) => {
       workingMachine.inputs[workingMachine.machine.inputIdx]
     );
 
-    console.log(
-      `Machine ${currMachine} executed command ${
-        workingMachine.machine.lastCommand
-      }, with input ${workingMachine.inputs[workingMachine.machine.inputIdx]}`
-    );
-
     if (workingMachine.machine.lastCommand === 3) {
       workingMachine.machine.inputIdx++;
     }
@@ -76,5 +74,11 @@ permutations.forEach((permutation) => {
       break;
     }
   }
-  console.log(machines[currMachine]);
+
+  maxThrust = Math.max(
+    maxThrust,
+    machines[currMachine].inputs[machines[currMachine].inputs.length - 1]
+  );
 });
+
+console.log(maxThrust);
