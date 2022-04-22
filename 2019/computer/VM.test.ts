@@ -6,6 +6,8 @@ import day5Input from '../05/input';
 import prepareDay7Input from '../07/helpers/prepareInput';
 import day7Input from '../07/input';
 import permute from '../07/helpers/permute';
+import prepareDay9Input from '../09/helpers/prepareInput';
+import day9Input from '../09/input';
 
 describe('Works for day 2', () => {
   let input: number[] = [];
@@ -205,5 +207,23 @@ describe('Works for day 7', () => {
     });
 
     expect(maxThrust).toBe(39431233);
+  });
+});
+
+describe('Works for day 9', () => {
+  let input: number[] = [];
+
+  beforeEach(() => {
+    input = prepareDay9Input(day9Input);
+  });
+
+  it('Works for part 1', () => {
+    const vm = new VM(input);
+
+    while (vm.working) {
+      vm.executeInstruction(1);
+    }
+
+    expect(vm.getLastOutput).toBe(2316632620);
   });
 });
