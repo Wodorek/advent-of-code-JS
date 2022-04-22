@@ -226,4 +226,14 @@ describe('Works for day 9', () => {
 
     expect(vm.getLastOutput).toBe(2316632620);
   });
+
+  it('Works for part 2', () => {
+    const vm = new VM(input);
+
+    while (vm.working) {
+      vm.executeInstruction(2);
+    }
+
+    expect(vm.getLastOutput).toBe(78869);
+  });
 });
