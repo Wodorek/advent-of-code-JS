@@ -1,6 +1,8 @@
 import input from './input';
 import prepareInput from './helpers/prepareInput';
 import getGCD from './helpers/getGCD';
+import sortFromPoint from './helpers/sortFromPoint';
+import sortClockwise from './helpers/sortClockwise';
 
 const inputArr = prepareInput(input);
 
@@ -65,10 +67,14 @@ function divideIntoQuadrants(asteroids: number[][], point: [number, number]) {
   return quadrants;
 }
 
-function countInQuadrant(quadrant: number[][], from: number[], quadId: string) {
+function getVisibleInQuadrant(
+  quadrant: number[][],
+  from: number[],
+  quadId: string
+) {
   const steps: number[][] = [];
 
-  let totalVisible = 0;
+  const visibleFromPoint: number[][] = [];
 
   quadrant.forEach((asteroid) => {
     let isVisible = true;
@@ -76,7 +82,6 @@ function countInQuadrant(quadrant: number[][], from: number[], quadId: string) {
     steps.forEach((step) => {
       const deltas = [step[0], step[1]];
 
-      //this has to be the dumbest thing I ever coded
       while (true) {
         if (
           asteroid[0] + deltas[0] === from[0] &&
@@ -121,7 +126,7 @@ function countInQuadrant(quadrant: number[][], from: number[], quadId: string) {
     });
 
     if (isVisible) {
-      totalVisible++;
+      visibleFromPoint.push(asteroid);
 
       const xDelta = from[0] - asteroid[0];
       const yDelta = from[1] - asteroid[1];
@@ -131,41 +136,39 @@ function countInQuadrant(quadrant: number[][], from: number[], quadId: string) {
     }
   });
 
-  return totalVisible;
+  return visibleFromPoint;
 }
 
 function countVisibleAsteroids(asteroids: number[][], from: [number, number]) {
-  const filteredAsteroids = asteroids.filter((el) => {
+  const filteredAsteroids = sortFromPoint(asteroids, from).filter((el) => {
     return el[0] !== from[0] || el[1] !== from[1];
   });
 
   const quadrants = divideIntoQuadrants(filteredAsteroids, from);
 
   const testQuad = [
-    quadrants.top.left,
     quadrants.top.right,
-    quadrants.bottom.left,
     quadrants.bottom.right,
+    quadrants.bottom.left,
+    quadrants.top.left,
   ];
-  const ids = ['tl', 'tr', 'bl', 'br'];
+  const ids = ['tr', 'br', 'bl', 'tl'];
 
-  let totalVisible = 0;
+  const allVisible: number[][] = [];
 
   testQuad.forEach((quad, idx) => {
-    totalVisible += countInQuadrant(quad, from, ids[idx]);
+    allVisible.push(...getVisibleInQuadrant(quad, from, ids[idx]));
   });
 
-  return totalVisible;
+  return allVisible;
 }
 
-let maxFound = -Infinity;
-
-asteroids.forEach((asteroid) => {
-  const totalFound = countVisibleAsteroids(asteroids, asteroid);
-
-  if (totalFound > maxFound) {
-    maxFound = totalFound;
-  }
+const foundAsteroids = countVisibleAsteroids(asteroids, [8, 3]);
+const sorted = sortClockwise(
+  foundAsteroids.map((el) => {
+    return [el[0] - 8, el[1] - 3];
+  }),
+  [0, 0]
+).map((el) => {
+  return [el[0] + 8, el[1] + 3];
 });
-
-console.log(maxFound);
