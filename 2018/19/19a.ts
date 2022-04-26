@@ -10,8 +10,8 @@ class OpcodeDevice {
   pointerValue: number;
   pointerBoundTo: number;
 
-  constructor(registerSize: number, pointer: number) {
-    this.registers = new Array(registerSize).fill(0);
+  constructor(initialRegisters: number[], pointer: number) {
+    this.registers = initialRegisters;
     this.working = true;
     this.pointerBoundTo = pointer;
     this.pointerValue = this.registers[pointer];
@@ -154,7 +154,7 @@ class OpcodeDevice {
   }
 }
 
-const device = new OpcodeDevice(6, bindTo);
+const device = new OpcodeDevice([0, 0, 0, 0, 0, 0], bindTo);
 
 let currentInst = device.registers[bindTo];
 
