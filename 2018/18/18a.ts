@@ -5,10 +5,6 @@ import getItemsAround from './helpers/getItemsAround';
 
 const inputArr = prepareInput(input);
 
-inputArr.forEach((line) => {
-  console.log(line.join(''));
-});
-
 function processAcre(area: string[][], row: number, column: number) {
   const acre = area[column][row];
   const around = getItemsAround(area, row, column);
