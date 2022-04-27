@@ -30,6 +30,27 @@ const reduceArraySize = (
 
 const mapped = reduceArraySize(inputArr, minX, minY);
 
+const testArr = [
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '#', '#', '#', '#', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
+];
+
+/**Mostly for visualization */
 const createMap = (coordinates: coordinate[]) => {
   const maxX = getMax(coordinates, 'x');
   const maxY = getMax(coordinates, 'y');
@@ -57,98 +78,46 @@ const createMap = (coordinates: coordinate[]) => {
   return map;
 };
 
-const groundSlice = createMap(mapped);
+const map = createMap(mapped);
 
-const pourWater = (arr: string[][], x: number, y: number) => {
-  groundSlice.forEach((el) => {
-    console.log(el.join(' '));
-  });
-  let bottom = y;
+function pourWater(map: string[][], x: number, y: number) {
+  const newMap = map.map((el) => el.map((nel) => nel));
 
-  while (arr[bottom][x] !== '#') {
-    arr[bottom][x] = '|';
+  newMap[y][x] = '+';
 
-    bottom++;
-    if (bottom === arr.length) {
-      return;
-    }
-  }
-
-  bottom--;
-
-  let left = x;
-  let right = x;
-
-  let stop = false;
-
-  const overflow = [0, 0];
-  let filled = 0;
-
-  for (let i = bottom - y; i >= 0; i--) {
-    if (stop) {
+  let mod = 1;
+  while (true) {
+    if (y + mod > newMap.length - 1) {
       break;
     }
-    left = x;
-    right = x;
-    while (arr[y + i][left] !== '#' && arr[y + i + 1][left - 1] !== '.') {
-      arr[y + i][left] = '~';
-      left--;
-      if (arr[y + i][left] !== '#' && arr[y + i + 1][left - 1] === '.') {
-        stop = true;
-      }
+    if (newMap[y + mod][x] === '.') {
+      newMap[y + mod][x] = '_';
+    } else {
+      break;
+    }
+    mod++;
+  }
+
+  let wellBottom = y + mod - 1;
+
+  while (true) {
+    if (wellBottom <= y) {
+      break;
     }
 
-    while (
-      arr[y + i][right] &&
-      arr[y + i][right] !== '#' &&
-      arr[y + i + 1][right + 1] !== '.'
-    ) {
-      arr[y + i][right] = '~';
-      right++;
-      if (arr[y + i][right] !== '#' && arr[y + i + 1][right + 1] === '.') {
-        stop = true;
-      }
-    }
-    filled++;
+    let left = x;
+    let right = x;
+
+    while (newMap[wellBottom][right + 1] !== '#') {}
+
+    wellBottom--;
   }
 
-  if (arr[bottom - filled + 1][left] === '.') {
-    overflow[0] = 1;
-  }
-
-  if (arr[bottom - filled + 1][right] === '.') {
-    overflow[1] = 1;
-  }
-
-  if (overflow[0] === 0 && overflow[1] === 0) {
-    pourWater(arr, x, y - 1);
-  }
-
-  if (overflow[1] === 1) {
-    arr[bottom - filled + 1][right] = '~';
-    pourWater(arr, right + 1, bottom - filled + 1);
-  }
-
-  if (overflow[0] === 1) {
-    arr[bottom - filled + 1][left] = '~';
-    pourWater(arr, left - 1, bottom - filled + 1);
-  }
-};
-
-pourWater(groundSlice, 500 - minX, 0);
-
-groundSlice.forEach((el) => {
-  console.log(el.join(' '));
-});
-
-let total = 0;
-
-groundSlice.forEach((line) => {
-  line.forEach((el) => {
-    if (el === '|' || el === '~') {
-      total++;
-    }
+  newMap.forEach((line) => {
+    console.log(line.join(' '));
   });
-});
+}
 
-console.log(total);
+pourWater(testArr, 3, 0);
+console.log('');
+// pourWater(map, spring - 4, 0);
