@@ -1,11 +1,10 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
-import { type } from 'os';
 
 const inputArr = prepareInput(input);
 
-class SnailNum {
+export class SnailNum {
   left: number | SnailNum;
   right: number | SnailNum;
   depth: number;
@@ -62,9 +61,9 @@ class SnailNum {
   }
 
   explode() {
+    const queue = [this.left, this.right];
     this.allNodes = [];
     this.unravel();
-    const queue = [this.left, this.right];
 
     const candidates: SnailNum[] = [];
 
@@ -82,47 +81,70 @@ class SnailNum {
     }
 
     let toExplode: SnailNum | number = candidates[0];
+    const rightVal = toExplode.right as number;
+    const leftVal = toExplode.left as number;
 
-    const numbersLookup = this.allNodes.filter((el) => {
-      return typeof el !== 'number';
-    }) as SnailNum[];
+    console.log(leftVal);
 
-    console.log(numbersLookup.indexOf(toExplode));
+    const expIdx = this.allNodes.indexOf(toExplode);
 
-    let left = numbersLookup.indexOf(toExplode) - 1;
-    let right = numbersLookup.indexOf(toExplode) + 1;
+    const lookingFor = `${toExplode.left},${toExplode.right}`;
+    const replaceLen = lookingFor.length;
 
-    while (left >= 0) {
-      if (typeof numbersLookup[left].right === 'number') {
-        numbersLookup[left].right += toExplode.left as any;
+    let asStr = `${JSON.stringify(this.turnIntoArr())}`;
+
+    let replaceIdx = asStr.indexOf(lookingFor, expIdx);
+
+    let left = replaceIdx - 1;
+    let right = replaceIdx + replaceLen;
+
+    let lmod = 0;
+    let rmod = 0;
+    while (left > 0) {
+      const asArr = asStr.split('');
+
+      const checking = asArr[left];
+
+      if (!isNaN(+checking)) {
+        console.log(asArr[left]);
+        asArr[left] = `${+asArr[left] + leftVal}`;
+
+        if (`${+asArr[left]}`.length > 1) {
+          right++;
+          lmod++;
+          replaceIdx++;
+        }
+        asStr = asArr.join('');
         break;
       }
-      if (typeof numbersLookup[left].left === 'number') {
-        numbersLookup[left].left += toExplode.left as any;
-        break;
-      }
+
       left--;
     }
 
-    while (right <= numbersLookup.length) {
-      if (typeof numbersLookup[right].left === 'number') {
-        numbersLookup[right].left += toExplode.right as any;
+    while (right < asStr.length) {
+      const asArr = asStr.split('');
+
+      const checking = asArr[right];
+
+      if (!isNaN(+checking)) {
+        asArr[right] = `${+asArr[right] + rightVal}`;
+
+        if (`${+asArr[right]}`.length > 1) {
+          rmod++;
+        }
+        asStr = asArr.join('');
         break;
       }
-      if (typeof numbersLookup[right].right === 'number') {
-        numbersLookup[right].right += toExplode.right as any;
-        break;
-      }
-      left--;
+
+      right++;
     }
 
-    if (toExplode.position === 'left') {
-      toExplode!.prev!.left = 0;
-    }
+    const leftPart = asStr.slice(0, replaceIdx - 1 - lmod);
+    const rightPart = asStr.slice(replaceIdx + replaceLen - rmod + 1);
 
-    if (toExplode.position === 'right') {
-      toExplode!.prev!.right = 0;
-    }
+    const newStr = leftPart + '0' + rightPart;
+
+    return newStr;
   }
 
   unravel(node: any = this) {
@@ -137,21 +159,17 @@ class SnailNum {
   }
 }
 
-const arr1: any[] = [
-  [3, [2, [1, [7, 3]]]],
-  [6, [5, [4, [3, 2]]]],
-];
+const arr1: any[] = [[[[[9, 8], 1], 2], 3], 4];
 
 const snailNum = new SnailNum(arr1[0], arr1[1], 0, null, 'root');
 
-console.log(`${snailNum.turnIntoArr()}`);
+// console.log(`${snailNum.turnIntoArr()}`);
 
-console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
-snailNum.explode();
+// console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
+console.log(snailNum.explode());
 
-console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
+// console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
 
-console.log(
-  `[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]` ===
-    `${JSON.stringify(snailNum.turnIntoArr())}`
-);
+// console.log(
+//   `[7,[6,[5,[7,0]]]]` === `${JSON.stringify(snailNum.turnIntoArr())}`
+// );
