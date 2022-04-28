@@ -60,11 +60,8 @@ export class SnailNum {
     return new SnailNum(asArr[0], asArr[1], 0, null, 'root');
   }
 
-  explode() {
+  getCandidates() {
     const queue = [this.left, this.right];
-    this.allNodes = [];
-    this.unravel();
-
     const candidates: SnailNum[] = [];
 
     while (queue.length > 0) {
@@ -80,11 +77,63 @@ export class SnailNum {
       }
     }
 
+    return candidates;
+  }
+
+  split() {
+    const queue = [this.left, this.right];
+
+    const candidates: SnailNum[] = [];
+
+    while (queue.length > 0) {
+      const toCheck = queue.shift()!;
+
+      if (toCheck instanceof SnailNum) {
+        if (typeof toCheck.left === 'number' && toCheck.left >= 10) {
+          candidates.push(toCheck);
+        } else if (typeof toCheck.right === 'number' && toCheck.right > 10) {
+          candidates.push(toCheck);
+        } else {
+          queue.unshift(toCheck.left);
+          queue.push(toCheck.right);
+        }
+      }
+    }
+
+    if (candidates.length === 0) {
+      return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
+    }
+
+    const toSplit = candidates[0];
+
+    if (typeof toSplit.left === 'number' && toSplit.left >= 10) {
+      const newLeft = Math.floor(toSplit.left / 2);
+      const newRight = Math.ceil(toSplit.left / 2);
+
+      toSplit.left = new SnailNum(newLeft, newRight, 0, toSplit, 'left');
+    } else if (typeof toSplit.right === 'number' && toSplit.right >= 10) {
+      const newLeft = Math.floor(toSplit.right / 2);
+      const newRight = Math.ceil(toSplit.right / 2);
+
+      toSplit.right = new SnailNum(newLeft, newRight, 0, toSplit, 'right');
+    }
+
+    return [true, JSON.stringify(this.turnIntoArr())];
+  }
+
+  explode() {
+    this.allNodes = [];
+    this.unravel();
+
+    const candidates = this.getCandidates();
+
+    if (candidates.length === 0) {
+      return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
+    }
+
     let toExplode: SnailNum | number = candidates[0];
     const rightVal = toExplode.right as number;
     const leftVal = toExplode.left as number;
-
-    console.log(leftVal);
 
     const expIdx = this.allNodes.indexOf(toExplode);
 
@@ -106,7 +155,6 @@ export class SnailNum {
       const checking = asArr[left];
 
       if (!isNaN(+checking)) {
-        console.log(asArr[left]);
         asArr[left] = `${+asArr[left] + leftVal}`;
 
         if (`${+asArr[left]}`.length > 1) {
@@ -144,7 +192,7 @@ export class SnailNum {
 
     const newStr = leftPart + '0' + rightPart;
 
-    return newStr;
+    return [true, newStr] as [boolean, string];
   }
 
   unravel(node: any = this) {
@@ -159,14 +207,24 @@ export class SnailNum {
   }
 }
 
-const arr1: any[] = [[[[[9, 8], 1], 2], 3], 4];
+const arr1: any[] = [
+  [
+    [[0, 7], 4],
+    [
+      [7, 8],
+      [0, [6, 7]],
+    ],
+  ],
+  [1, 1],
+];
 
-const snailNum = new SnailNum(arr1[0], arr1[1], 0, null, 'root');
+let snailNum = new SnailNum(arr1[0], arr1[1], 0, null, 'root');
+console.log(snailNum.explode()[1]);
 
 // console.log(`${snailNum.turnIntoArr()}`);
 
 // console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
-console.log(snailNum.explode());
+// console.log(snailNum.explode());
 
 // console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
 

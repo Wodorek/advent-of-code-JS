@@ -6,7 +6,7 @@ describe('Explodes correctly', () => {
 
     const snailNum = new SnailNum(arr[0], arr[1], 0, null, 'root');
 
-    expect(snailNum.explode()).toBe('[[[[0,9],2],3],4]');
+    expect(snailNum.explode()[1]).toBe('[[[[0,9],2],3],4]');
   });
 
   it('Works for example 2', () => {
@@ -14,9 +14,7 @@ describe('Explodes correctly', () => {
 
     const snailNum = new SnailNum(arr[0], arr[1], 0, null, 'root');
 
-    snailNum.explode();
-
-    expect(snailNum.explode()).toBe('[7,[6,[5,[7,0]]]]');
+    expect(snailNum.explode()[1]).toBe('[7,[6,[5,[7,0]]]]');
   });
 
   it('Works for example 3', () => {
@@ -24,9 +22,7 @@ describe('Explodes correctly', () => {
 
     const snailNum = new SnailNum(arr[0], arr[1], 0, null, 'root');
 
-    snailNum.explode();
-
-    expect(snailNum.explode()).toBe('[[6,[5,[7,0]]],3]');
+    expect(snailNum.explode()[1]).toBe('[[6,[5,[7,0]]],3]');
   });
 
   it('Works for example 4', () => {
@@ -37,9 +33,7 @@ describe('Explodes correctly', () => {
 
     const snailNum = new SnailNum(arr[0], arr[1], 0, null, 'root');
 
-    snailNum.explode();
-
-    expect(snailNum.explode()).toBe('[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]');
+    expect(snailNum.explode()[1]).toBe('[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]');
   });
 
   it('Works for example 5', () => {
@@ -50,8 +44,6 @@ describe('Explodes correctly', () => {
 
     const snailNum = new SnailNum(arr[0], arr[1], 0, null, 'root');
 
-    snailNum.explode();
-
-    expect(snailNum.explode()).toBe('[[3,[2,[8,0]]],[9,[5,[7,0]]]]');
+    expect(snailNum.explode()[1]).toBe('[[3,[2,[8,0]]],[9,[5,[7,0]]]]');
   });
 });
