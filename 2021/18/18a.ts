@@ -1,6 +1,7 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
+import { type } from 'os';
 
 const inputArr = prepareInput(input);
 
@@ -10,6 +11,7 @@ class SnailNum {
   depth: number;
   prev: SnailNum | null;
   position: 'left' | 'right' | 'root';
+  allNodes: (SnailNum | number)[] = [];
 
   constructor(
     left: number | SnailNum | any[],
@@ -60,52 +62,58 @@ class SnailNum {
   }
 
   explode() {
+    this.allNodes = [];
+    this.unravel();
     const queue = [this.left, this.right];
 
     const candidates: SnailNum[] = [];
 
     while (queue.length > 0) {
-      const toCheck = queue.pop()!;
+      const toCheck = queue.shift()!;
 
       if (toCheck instanceof SnailNum) {
         if (toCheck.depth >= 4) {
           candidates.push(toCheck);
         } else {
-          queue.push(toCheck.left, toCheck.right);
+          queue.unshift(toCheck.left);
+          queue.push(toCheck.right);
         }
       }
     }
 
-    let toExplode: SnailNum | number = candidates[candidates.length - 1];
+    let toExplode: SnailNum | number = candidates[0];
 
-    console.log(toExplode.prev);
+    const numbersLookup = this.allNodes.filter((el) => {
+      return typeof el !== 'number';
+    }) as SnailNum[];
 
-    let left = toExplode.left;
-    let right = toExplode.right;
+    console.log(numbersLookup.indexOf(toExplode));
 
-    let rightLookup = toExplode.prev;
-    let leftLookup = toExplode.prev;
+    let left = numbersLookup.indexOf(toExplode) - 1;
+    let right = numbersLookup.indexOf(toExplode) + 1;
 
-    while (true) {
-      if (typeof rightLookup?.right === 'number') {
-        rightLookup.right += right as number;
+    while (left >= 0) {
+      if (typeof numbersLookup[left].right === 'number') {
+        numbersLookup[left].right += toExplode.left as any;
         break;
-      } else if (rightLookup?.prev === null) {
-        break;
-      } else {
-        rightLookup = rightLookup!.prev;
       }
+      if (typeof numbersLookup[left].left === 'number') {
+        numbersLookup[left].left += toExplode.left as any;
+        break;
+      }
+      left--;
     }
 
-    while (true) {
-      if (typeof leftLookup?.left === 'number') {
-        leftLookup.left += left as number;
+    while (right <= numbersLookup.length) {
+      if (typeof numbersLookup[right].left === 'number') {
+        numbersLookup[right].left += toExplode.right as any;
         break;
-      } else if (leftLookup?.prev === null) {
-        break;
-      } else {
-        leftLookup = leftLookup!.prev;
       }
+      if (typeof numbersLookup[right].right === 'number') {
+        numbersLookup[right].right += toExplode.right as any;
+        break;
+      }
+      left--;
     }
 
     if (toExplode.position === 'left') {
@@ -114,6 +122,17 @@ class SnailNum {
 
     if (toExplode.position === 'right') {
       toExplode!.prev!.right = 0;
+    }
+  }
+
+  unravel(node: any = this) {
+    this.allNodes.push(node);
+
+    if (node.left) {
+      this.unravel(node.left);
+    }
+    if (node.right) {
+      this.unravel(node.right);
     }
   }
 }
@@ -125,8 +144,9 @@ const arr1: any[] = [
 
 const snailNum = new SnailNum(arr1[0], arr1[1], 0, null, 'root');
 
-console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
+console.log(`${snailNum.turnIntoArr()}`);
 
+console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
 snailNum.explode();
 
 console.log(`${JSON.stringify(snailNum.turnIntoArr())}`);
@@ -135,9 +155,3 @@ console.log(
   `[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]` ===
     `${JSON.stringify(snailNum.turnIntoArr())}`
 );
-// `[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]`
-
-[
-  [3, [2, [1, [7, 3]]]],
-  [6, [5, [4, [3, 2]]]],
-];
