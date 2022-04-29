@@ -140,13 +140,14 @@ export class SnailNum {
         }
       });
 
-      paths = paths.filter((_, idx) => {
-        return !removedIdxs.includes(idx);
-      });
+      paths = paths
+        .filter((_, idx) => {
+          return !removedIdxs.includes(idx);
+        })
+        .map((el) => {
+          return el.slice(1);
+        });
 
-      paths = paths.map((el) => {
-        return el.slice(1);
-      });
       candidates = candidates.filter((_, idx) => {
         return !removedIdxs.includes(idx);
       });
@@ -180,45 +181,73 @@ export class SnailNum {
   }
 
   explode() {
+    this.allNodes = [];
+    this.unravel();
+    const nodes = this.allNodes.filter((el) => {
+      return typeof el !== 'number';
+    }) as SnailNum[];
     const candidate = this.getCandidate('explode');
 
     if (!candidate) {
       return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
     }
 
-    const path = candidate.reconstructPath();
-    const accessors = path.map((el) => {
-      if (el === 'left') {
-        return 0;
-      } else {
-        return 1;
+    const candidateIdx = nodes.indexOf(candidate);
+
+    let leftLookup = candidateIdx - 1;
+    let rightLookup = candidateIdx + 1;
+
+    console.log('exploding');
+    console.log(JSON.stringify(this.turnIntoArr()));
+
+    while (leftLookup >= 0) {
+      const checking = nodes[leftLookup];
+
+      if (typeof checking.right === 'number') {
+        checking.right += candidate.left as number;
+        break;
+      } else if (typeof checking.left === 'number') {
+        checking.left += candidate.left as number;
+        break;
       }
-    });
-
-    let current = accessors.shift()!;
-
-    const arr = this.turnIntoArr();
-
-    let toModify = arr[current];
-
-    for (let i = 0; i < accessors.length - 1; i++) {
-      toModify = toModify[accessors[i]];
+      leftLookup--;
     }
 
-    toModify[accessors[accessors.length - 1]];
+    while (rightLookup < nodes.length) {
+      const checking = nodes[rightLookup];
 
-    console.log(arr);
+      if (typeof checking.left === 'number') {
+        checking.left += candidate.right as number;
+        break;
+      } else if (typeof checking.right === 'number') {
+        checking.right += candidate.right as number;
+        break;
+      }
 
-    return [true, ''] as [boolean, string];
+      rightLookup++;
+    }
+
+    if (candidate.position === 'left') {
+      candidate.prev!.left = 0;
+    } else {
+      candidate.prev!.right = 0;
+    }
+
+    console.log('product');
+    console.log(JSON.stringify(this.turnIntoArr()));
+    console.log('');
+
+    return [true, JSON.stringify(this.turnIntoArr())] as [boolean, string];
   }
 
   unravel(node: any = this) {
-    this.allNodes.push(node);
-
-    if (node.left) {
+    if (typeof node.left !== 'number') {
       this.unravel(node.left);
     }
-    if (node.right) {
+
+    this.allNodes.push(node);
+
+    if (typeof node.right !== 'number') {
       this.unravel(node.right);
     }
   }
@@ -257,32 +286,50 @@ export function processSnailSum(num1: SnailNum, num2: SnailNum) {
   return currStage;
 }
 
-const arr = [
-  [3, [2, [1, [7, 3]]]],
-  [6, [5, [4, [3, 2]]]],
+const arr1 = [
+  [
+    [
+      [7, 0],
+      [7, 7],
+    ],
+    [
+      [7, 7],
+      [7, 8],
+    ],
+  ],
+  [
+    [
+      [7, 7],
+      [8, 8],
+    ],
+    [
+      [7, 7],
+      [8, 7],
+    ],
+  ],
 ];
 
-let snailNum = new SnailNum(arr[0], arr[1]);
+const arr2 = [
+  7,
+  [
+    5,
+    [
+      [3, 8],
+      [1, 4],
+    ],
+  ],
+];
 
-console.log(JSON.stringify(snailNum.turnIntoArr()));
+let num1 = new SnailNum(arr1[0], arr1[1]);
+const num2 = new SnailNum(arr2[0], arr2[1]);
 
-const exploded = eval(snailNum.explode()[1]);
+num1 = processSnailSum(num1, num2);
 
-snailNum = new SnailNum(exploded[0], exploded[1]);
-console.log(JSON.stringify(snailNum.turnIntoArr()));
+console.log(JSON.stringify(num1.turnIntoArr()));
 console.log(
-  JSON.stringify(snailNum.turnIntoArr()) === '[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]'
+  JSON.stringify(num1.turnIntoArr()) ===
+    '[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]'
 );
 
-//THIS
-
-// const arr = [[[[[9, 8], 1], 2], 3], 4];
-
-// const accesses = [0, 0, 0];
-
-// let test = arr[0];
-// accesses.forEach((num) => {
-//   test = test[num];
-// });
-// test[1] = 300000;
-// console.log(arr);
+('[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]');
+('[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[7,8],[0,8]],[[8,9],[9,0]]]]');
