@@ -241,13 +241,13 @@ export class SnailNum {
   }
 
   flatten(node: any = this) {
-    if (node.left) {
+    if (typeof node.left !== 'number') {
       this.flatten(node.left);
     }
 
     this.allNodes.push(node);
 
-    if (node.right) {
+    if (typeof node.right !== 'number') {
       this.flatten(node.right);
     }
   }
