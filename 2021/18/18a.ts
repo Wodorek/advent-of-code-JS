@@ -180,83 +180,36 @@ export class SnailNum {
   }
 
   explode() {
-    this.allNodes = [];
-    this.unravel();
+    const candidate = this.getCandidate('explode');
 
-    let toExplode = this.getCandidate('explode');
-
-    if (toExplode === null) {
+    if (!candidate) {
       return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
     }
 
-    const rightVal = toExplode.right as number;
-    const leftVal = toExplode.left as number;
-
-    const expIdx = this.allNodes.indexOf(toExplode);
-
-    const lookingFor = `${toExplode.left},${toExplode.right}`;
-
-    const replaceLen = lookingFor.length;
-
-    let asStr = `${JSON.stringify(this.turnIntoArr())}`;
-
-    let replaceIdx = asStr.indexOf(lookingFor, expIdx);
-
-    let left = replaceIdx - 1;
-    let right = replaceIdx + replaceLen + 1;
-
-    while (left > 0) {
-      const asArr = asStr.split('');
-
-      const checking = asArr[left];
-
-      if (!isNaN(+checking)) {
-        if (!isNaN(+asArr[left - 1])) {
-          asArr[left - 1] = `${
-            parseInt(asArr.slice(left - 1, left + 1).join('')) + leftVal
-          }`;
-          asArr[left] = '';
-        } else {
-          asArr[left] = `${+asArr[left] + leftVal}`;
-        }
-
-        if (`${+asArr[left]}`.length > 1) {
-          right++;
-          replaceIdx++;
-        }
-        asStr = asArr.join('');
-        break;
+    const path = candidate.reconstructPath();
+    const accessors = path.map((el) => {
+      if (el === 'left') {
+        return 0;
+      } else {
+        return 1;
       }
+    });
 
-      left--;
+    let current = accessors.shift()!;
+
+    const arr = this.turnIntoArr();
+
+    let toModify = arr[current];
+
+    for (let i = 0; i < accessors.length - 1; i++) {
+      toModify = toModify[accessors[i]];
     }
 
-    while (right < asStr.length) {
-      const asArr = asStr.split('');
+    toModify[accessors[accessors.length - 1]];
 
-      const checking = asArr[right];
+    console.log(arr);
 
-      if (!isNaN(+checking)) {
-        if (!isNaN(+asArr[right + 1])) {
-          asArr[right] = `${
-            parseInt(asArr.slice(right, right + 2).join('')) + rightVal
-          }`;
-          asArr[right + 1] = '';
-        } else {
-          asArr[right] = `${+asArr[right] + rightVal}`;
-        }
-        asStr = asArr.join('');
-        break;
-      }
-      right++;
-    }
-
-    const leftPart = asStr.slice(0, replaceIdx - 1);
-    const rightPart = asStr.slice(replaceIdx + replaceLen + 1);
-
-    const newStr = leftPart + '0' + rightPart;
-
-    return [true, newStr] as [boolean, string];
+    return [true, ''] as [boolean, string];
   }
 
   unravel(node: any = this) {
