@@ -53,58 +53,122 @@ export class SnailNum {
   }
 
   add(num: SnailNum) {
-    const newNum = new SnailNum(this, num, 0, null, 'root');
+    const newNum = new SnailNum(this, num);
 
     const asArr = newNum.turnIntoArr();
 
-    return new SnailNum(asArr[0], asArr[1], 0, null, 'root');
+    return new SnailNum(asArr[0], asArr[1]);
   }
 
-  getCandidates() {
+  reconstructPath(node: SnailNum = this) {
+    const path: string[] = [];
+
+    let currNode = node;
+
+    while (currNode.prev !== null) {
+      if (currNode.position === 'right') {
+        path.unshift('right');
+      } else {
+        path.unshift('left');
+      }
+      currNode = currNode.prev;
+    }
+
+    return path;
+  }
+
+  getCandidate(to: 'explode' | 'split') {
     const queue = [this.left, this.right];
-    const candidates: SnailNum[] = [];
+    let candidates: SnailNum[] = [];
 
-    while (queue.length > 0) {
-      const toCheck = queue.shift()!;
+    if (to === 'explode') {
+      while (queue.length > 0) {
+        const toCheck = queue.shift()!;
 
-      if (toCheck instanceof SnailNum) {
-        if (toCheck.depth >= 4) {
-          candidates.push(toCheck);
-        } else {
-          queue.unshift(toCheck.left);
-          queue.push(toCheck.right);
+        if (toCheck instanceof SnailNum) {
+          if (toCheck.depth >= 4) {
+            candidates.push(toCheck);
+          } else {
+            queue.unshift(toCheck.left);
+            queue.push(toCheck.right);
+          }
+        }
+      }
+    } else {
+      while (queue.length > 0) {
+        const toCheck = queue.shift()!;
+
+        if (toCheck instanceof SnailNum) {
+          if (typeof toCheck.left === 'number' && toCheck.left >= 10) {
+            candidates.push(toCheck);
+          } else if (typeof toCheck.right === 'number' && toCheck.right >= 10) {
+            candidates.push(toCheck);
+          } else {
+            queue.unshift(toCheck.left);
+            queue.push(toCheck.right);
+          }
         }
       }
     }
 
-    return candidates;
+    let paths: string[][] = [];
+
+    if (candidates.length === 0) {
+      return null;
+    }
+
+    console.log(candidates);
+    candidates.forEach((candidate) => {
+      paths.push(candidate.reconstructPath());
+    });
+
+    while (candidates.length > 1) {
+      const removedIdxs: number[] = [];
+
+      while (
+        paths.every((el) => {
+          return el[0] === 'right';
+        })
+      ) {
+        paths = paths.map((el) => {
+          return el.slice(1);
+        });
+      }
+
+      candidates.forEach((_, idx) => {
+        if (paths[idx][0] === 'right') {
+          removedIdxs.push(idx);
+        }
+      });
+
+      paths = paths.filter((_, idx) => {
+        return !removedIdxs.includes(idx);
+      });
+
+      paths = paths.map((el) => {
+        return el.slice(1);
+      });
+      candidates = candidates.filter((_, idx) => {
+        return !removedIdxs.includes(idx);
+      });
+    }
+
+    return candidates[0];
   }
 
   split() {
-    const queue = [this.left, this.right];
+    const toSplit = this.getCandidate('split');
 
-    const candidates: SnailNum[] = [];
+    // console.log(toSplit);
 
-    while (queue.length > 0) {
-      const toCheck = queue.shift()!;
-
-      if (toCheck instanceof SnailNum) {
-        if (typeof toCheck.left === 'number' && toCheck.left >= 10) {
-          candidates.push(toCheck);
-        } else if (typeof toCheck.right === 'number' && toCheck.right > 10) {
-          candidates.push(toCheck);
-        } else {
-          queue.unshift(toCheck.left);
-          queue.push(toCheck.right);
-        }
-      }
-    }
-
-    if (candidates.length === 0) {
+    if (toSplit === null) {
       return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
     }
 
-    const toSplit = candidates[0];
+    let asStr = `${JSON.stringify(this.turnIntoArr())}`;
+
+    console.log(`Splitting `);
+    console.log(asStr);
 
     if (typeof toSplit.left === 'number' && toSplit.left >= 10) {
       const newLeft = Math.floor(toSplit.left / 2);
@@ -125,40 +189,48 @@ export class SnailNum {
     this.allNodes = [];
     this.unravel();
 
-    const candidates = this.getCandidates();
+    let toExplode = this.getCandidate('explode');
 
-    if (candidates.length === 0) {
+    if (toExplode === null) {
       return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
     }
 
-    let toExplode: SnailNum | number = candidates[0];
     const rightVal = toExplode.right as number;
     const leftVal = toExplode.left as number;
 
     const expIdx = this.allNodes.indexOf(toExplode);
 
     const lookingFor = `${toExplode.left},${toExplode.right}`;
+
     const replaceLen = lookingFor.length;
 
     let asStr = `${JSON.stringify(this.turnIntoArr())}`;
 
     let replaceIdx = asStr.indexOf(lookingFor, expIdx);
+    console.log(
+      `Exp looking for ${lookingFor}, from ${expIdx}, found at ${replaceIdx}`
+    );
+    console.log(asStr);
 
     let left = replaceIdx - 1;
-    let right = replaceIdx + replaceLen;
+    let right = replaceIdx + replaceLen + 1;
 
-    let lmod = 0;
-    let rmod = 0;
     while (left > 0) {
       const asArr = asStr.split('');
 
       const checking = asArr[left];
 
       if (!isNaN(+checking)) {
-        asArr[left] = `${+asArr[left] + leftVal}`;
+        if (!isNaN(+asArr[left - 1])) {
+          asArr[left - 1] = `${
+            parseInt(asArr.slice(left - 1, left + 1).join('')) + leftVal
+          }`;
+          asArr[left] = '';
+        } else {
+          asArr[left] = `${+asArr[left] + leftVal}`;
+        }
 
         if (`${+asArr[left]}`.length > 1) {
-          lmod++;
           right++;
           replaceIdx++;
         }
@@ -175,22 +247,22 @@ export class SnailNum {
       const checking = asArr[right];
 
       if (!isNaN(+checking)) {
-        asArr[right] = `${+asArr[right] + rightVal}`;
-
-        if (`${+asArr[right]}`.length > 1) {
-          rmod++;
-
-          replaceIdx++;
+        if (!isNaN(+asArr[right + 1])) {
+          asArr[right] = `${
+            parseInt(asArr.slice(right, right + 2).join('')) + rightVal
+          }`;
+          asArr[right + 1] = '';
+        } else {
+          asArr[right] = `${+asArr[right] + rightVal}`;
         }
         asStr = asArr.join('');
         break;
       }
-
       right++;
     }
 
-    const leftPart = asStr.slice(0, replaceIdx - 1 - lmod);
-    const rightPart = asStr.slice(replaceIdx + replaceLen - rmod + 1);
+    const leftPart = asStr.slice(0, replaceIdx - 1);
+    const rightPart = asStr.slice(replaceIdx + replaceLen + 1);
 
     const newStr = leftPart + '0' + rightPart;
 
@@ -217,11 +289,11 @@ export function processSnailSum(num1: SnailNum, num2: SnailNum) {
   while (operations.some((el) => el)) {
     if (operations[0]) {
       const exploded = currStage.explode();
-      console.log(exploded[1]);
       const asArr = eval(exploded[1]);
       operations[0] = exploded[0];
 
-      currStage = new SnailNum(asArr[0], asArr[1], 0, null, 'root');
+      currStage = new SnailNum(asArr[0], asArr[1]);
+      operations[1] = true;
       continue;
     }
 
@@ -231,9 +303,9 @@ export function processSnailSum(num1: SnailNum, num2: SnailNum) {
 
       operations[1] = split[0];
 
-      currStage = new SnailNum(asArr[0], asArr[1], 0, null, 'root');
+      currStage = new SnailNum(asArr[0], asArr[1]);
 
-      if (split[1]) {
+      if (split[0]) {
         operations[0] = true;
       }
     }
@@ -241,3 +313,85 @@ export function processSnailSum(num1: SnailNum, num2: SnailNum) {
 
   return currStage;
 }
+
+// const problem = [
+//   [
+//     [
+//       [6, 0],
+//       [7, 7],
+//     ],
+//     [
+//       [7, 7],
+//       [0, 7],
+//     ],
+//   ],
+//   [
+//     [
+//       [7, 7],
+//       [7, 7],
+//     ],
+//     [
+//       [8, 8],
+//       [9, 9],
+//     ],
+//   ],
+// ];
+
+// const problemNum = new SnailNum(problem[0], problem[1]);
+// console.log(JSON.stringify(problemNum.turnIntoArr()));
+
+// const exploded = problemNum.explode();
+
+// console.log(exploded);
+
+// let problem = [
+//   [
+//     [
+//       [6, 7],
+//       [6, 7],
+//     ],
+//     [
+//       [7, 7],
+//       [0, 7],
+//     ],
+//   ],
+//   [
+//     [
+//       [8, 7],
+//       [7, 7],
+//     ],
+//     [
+//       [8, 8],
+//       [8, 0],
+//     ],
+//   ],
+// ];
+// const toAdd = [
+//   [
+//     [[2, 4], 7],
+//     [6, [0, 5]],
+//   ],
+//   [
+//     [
+//       [6, 8],
+//       [2, 8],
+//     ],
+//     [
+//       [2, 1],
+//       [4, 5],
+//     ],
+//   ],
+// ];
+
+// let num1 = new SnailNum(problem[0], problem[1]);
+// let num2 = new SnailNum(toAdd[0], toAdd[1]);
+
+// num1 = processSnailSum(num1, num2);
+
+// console.log(JSON.stringify(num1.turnIntoArr()));
+// console.log(
+//   JSON.stringify(num1.turnIntoArr()) ==
+//     '[[[[7,0],[7,7]],[[7,7],[7,8]]],[[[7,7],[8,8]],[[7,7],[8,7]]]]'
+// );
+// ('[[[[7,0],[7,7]],[[7,7],[7,8]]],[[[7,7],[8,8]],[[7,7],[8,7]]]]');
+// ('[[[[6,0],[7,7]],[[7,7],[0,7]]],[[[7,7],[7,7]],[[8,8],[9,9]]]]');
