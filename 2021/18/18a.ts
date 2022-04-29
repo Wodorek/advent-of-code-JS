@@ -169,12 +169,12 @@ export class SnailNum {
       const newLeft = Math.floor(toSplit.left / 2);
       const newRight = Math.ceil(toSplit.left / 2);
 
-      toSplit.left = new SnailNum(newLeft, newRight, 0, toSplit, 'left');
+      toSplit.left = new SnailNum(newLeft, newRight);
     } else if (typeof toSplit.right === 'number' && toSplit.right >= 10) {
       const newLeft = Math.floor(toSplit.right / 2);
       const newRight = Math.ceil(toSplit.right / 2);
 
-      toSplit.right = new SnailNum(newLeft, newRight, 0, toSplit, 'right');
+      toSplit.right = new SnailNum(newLeft, newRight);
     }
 
     return [true, JSON.stringify(this.turnIntoArr())] as [boolean, string];
@@ -197,8 +197,8 @@ export class SnailNum {
     let leftLookup = candidateIdx - 1;
     let rightLookup = candidateIdx + 1;
 
-    console.log('exploding');
-    console.log(JSON.stringify(this.turnIntoArr()));
+    // console.log('exploding');
+    // console.log(JSON.stringify(this.turnIntoArr()));
 
     while (leftLookup >= 0) {
       const checking = nodes[leftLookup];
@@ -233,9 +233,9 @@ export class SnailNum {
       candidate.prev!.right = 0;
     }
 
-    console.log('product');
-    console.log(JSON.stringify(this.turnIntoArr()));
-    console.log('');
+    // console.log('product');
+    // console.log(JSON.stringify(this.turnIntoArr()));
+    // console.log('');
 
     return [true, JSON.stringify(this.turnIntoArr())] as [boolean, string];
   }
