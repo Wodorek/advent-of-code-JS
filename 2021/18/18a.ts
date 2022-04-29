@@ -117,7 +117,6 @@ export class SnailNum {
       return null;
     }
 
-    console.log(candidates);
     candidates.forEach((candidate) => {
       paths.push(candidate.reconstructPath());
     });
@@ -159,16 +158,11 @@ export class SnailNum {
   split() {
     const toSplit = this.getCandidate('split');
 
-    // console.log(toSplit);
-
     if (toSplit === null) {
       return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
     }
 
     let asStr = `${JSON.stringify(this.turnIntoArr())}`;
-
-    console.log(`Splitting `);
-    console.log(asStr);
 
     if (typeof toSplit.left === 'number' && toSplit.left >= 10) {
       const newLeft = Math.floor(toSplit.left / 2);
@@ -207,10 +201,6 @@ export class SnailNum {
     let asStr = `${JSON.stringify(this.turnIntoArr())}`;
 
     let replaceIdx = asStr.indexOf(lookingFor, expIdx);
-    console.log(
-      `Exp looking for ${lookingFor}, from ${expIdx}, found at ${replaceIdx}`
-    );
-    console.log(asStr);
 
     let left = replaceIdx - 1;
     let right = replaceIdx + replaceLen + 1;
@@ -313,6 +303,23 @@ export function processSnailSum(num1: SnailNum, num2: SnailNum) {
 
   return currStage;
 }
+
+const arr = [
+  [3, [2, [1, [7, 3]]]],
+  [6, [5, [4, [3, 2]]]],
+];
+
+let snailNum = new SnailNum(arr[0], arr[1]);
+
+console.log(JSON.stringify(snailNum.turnIntoArr()));
+
+const exploded = eval(snailNum.explode()[1]);
+
+snailNum = new SnailNum(exploded[0], exploded[1]);
+console.log(JSON.stringify(snailNum.turnIntoArr()));
+console.log(
+  JSON.stringify(snailNum.turnIntoArr()) === '[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]'
+);
 
 //THIS
 
