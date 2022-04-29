@@ -314,84 +314,15 @@ export function processSnailSum(num1: SnailNum, num2: SnailNum) {
   return currStage;
 }
 
-// const problem = [
-//   [
-//     [
-//       [6, 0],
-//       [7, 7],
-//     ],
-//     [
-//       [7, 7],
-//       [0, 7],
-//     ],
-//   ],
-//   [
-//     [
-//       [7, 7],
-//       [7, 7],
-//     ],
-//     [
-//       [8, 8],
-//       [9, 9],
-//     ],
-//   ],
-// ];
+//THIS
 
-// const problemNum = new SnailNum(problem[0], problem[1]);
-// console.log(JSON.stringify(problemNum.turnIntoArr()));
+// const arr = [[[[[9, 8], 1], 2], 3], 4];
 
-// const exploded = problemNum.explode();
+// const accesses = [0, 0, 0];
 
-// console.log(exploded);
-
-// let problem = [
-//   [
-//     [
-//       [6, 7],
-//       [6, 7],
-//     ],
-//     [
-//       [7, 7],
-//       [0, 7],
-//     ],
-//   ],
-//   [
-//     [
-//       [8, 7],
-//       [7, 7],
-//     ],
-//     [
-//       [8, 8],
-//       [8, 0],
-//     ],
-//   ],
-// ];
-// const toAdd = [
-//   [
-//     [[2, 4], 7],
-//     [6, [0, 5]],
-//   ],
-//   [
-//     [
-//       [6, 8],
-//       [2, 8],
-//     ],
-//     [
-//       [2, 1],
-//       [4, 5],
-//     ],
-//   ],
-// ];
-
-// let num1 = new SnailNum(problem[0], problem[1]);
-// let num2 = new SnailNum(toAdd[0], toAdd[1]);
-
-// num1 = processSnailSum(num1, num2);
-
-// console.log(JSON.stringify(num1.turnIntoArr()));
-// console.log(
-//   JSON.stringify(num1.turnIntoArr()) ==
-//     '[[[[7,0],[7,7]],[[7,7],[7,8]]],[[[7,7],[8,8]],[[7,7],[8,7]]]]'
-// );
-// ('[[[[7,0],[7,7]],[[7,7],[7,8]]],[[[7,7],[8,8]],[[7,7],[8,7]]]]');
-// ('[[[[6,0],[7,7]],[[7,7],[0,7]]],[[[7,7],[7,7]],[[8,8],[9,9]]]]');
+// let test = arr[0];
+// accesses.forEach((num) => {
+//   test = test[num];
+// });
+// test[1] = 300000;
+// console.log(arr);
