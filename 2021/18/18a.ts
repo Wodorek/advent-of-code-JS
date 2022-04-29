@@ -182,7 +182,7 @@ export class SnailNum {
 
   explode() {
     this.allNodes = [];
-    this.unravel();
+    this.flatten();
     const nodes = this.allNodes.filter((el) => {
       return typeof el !== 'number';
     }) as SnailNum[];
@@ -240,15 +240,15 @@ export class SnailNum {
     return [true, JSON.stringify(this.turnIntoArr())] as [boolean, string];
   }
 
-  unravel(node: any = this) {
-    if (typeof node.left !== 'number') {
-      this.unravel(node.left);
+  flatten(node: any = this) {
+    if (node.left) {
+      this.flatten(node.left);
     }
 
     this.allNodes.push(node);
 
-    if (typeof node.right !== 'number') {
-      this.unravel(node.right);
+    if (node.right) {
+      this.flatten(node.right);
     }
   }
 }
@@ -286,50 +286,50 @@ export function processSnailSum(num1: SnailNum, num2: SnailNum) {
   return currStage;
 }
 
-const arr1 = [
-  [
-    [
-      [7, 0],
-      [7, 7],
-    ],
-    [
-      [7, 7],
-      [7, 8],
-    ],
-  ],
-  [
-    [
-      [7, 7],
-      [8, 8],
-    ],
-    [
-      [7, 7],
-      [8, 7],
-    ],
-  ],
-];
+// const arr1 = [
+//   [
+//     [
+//       [7, 0],
+//       [7, 7],
+//     ],
+//     [
+//       [7, 7],
+//       [7, 8],
+//     ],
+//   ],
+//   [
+//     [
+//       [7, 7],
+//       [8, 8],
+//     ],
+//     [
+//       [7, 7],
+//       [8, 7],
+//     ],
+//   ],
+// ];
 
-const arr2 = [
-  7,
-  [
-    5,
-    [
-      [3, 8],
-      [1, 4],
-    ],
-  ],
-];
+// const arr2 = [
+//   7,
+//   [
+//     5,
+//     [
+//       [3, 8],
+//       [1, 4],
+//     ],
+//   ],
+// ];
 
-let num1 = new SnailNum(arr1[0], arr1[1]);
-const num2 = new SnailNum(arr2[0], arr2[1]);
+// let num1 = new SnailNum(arr1[0], arr1[1]);
+// const num2 = new SnailNum(arr2[0], arr2[1]);
 
-num1 = processSnailSum(num1, num2);
+// num1 = processSnailSum(num1, num2);
 
-console.log(JSON.stringify(num1.turnIntoArr()));
-console.log(
-  JSON.stringify(num1.turnIntoArr()) ===
-    '[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]'
-);
+// console.log(JSON.stringify(num1.turnIntoArr()));
+// console.log(
+//   JSON.stringify(num1.turnIntoArr()) ===
+//     '[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]'
+// );
 
-('[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]');
-('[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[7,8],[0,8]],[[8,9],[9,0]]]]');
+// ('[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]');
+// ('[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[7,8],[0,8]],[[8,9],[9,0]]]]');
