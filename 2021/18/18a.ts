@@ -60,104 +60,40 @@ export class SnailNum {
     return new SnailNum(asArr[0], asArr[1]);
   }
 
-  reconstructPath(node: SnailNum = this) {
-    const path: string[] = [];
+  getExplodeCandidate() {
+    const stack = [this.right, this.left];
+    while (stack.length > 0) {
+      const toCheck = stack.pop()!;
 
-    let currNode = node;
-
-    while (currNode.prev !== null) {
-      if (currNode.position === 'right') {
-        path.unshift('right');
-      } else {
-        path.unshift('left');
+      if (toCheck instanceof SnailNum) {
+        if (toCheck.depth >= 4) {
+          return toCheck;
+        } else {
+          stack.push(toCheck.right);
+          stack.push(toCheck.left);
+        }
       }
-      currNode = currNode.prev;
     }
-
-    return path;
+    return null;
   }
 
-  getCandidate(to: 'explode' | 'split') {
-    const queue = [this.left, this.right];
-    let candidates: SnailNum[] = [];
+  getSplitCandidate() {
+    const stack = [this.right, this.left];
+    while (stack.length > 0) {
+      const toCheck = stack.pop()!;
 
-    if (to === 'explode') {
-      while (queue.length > 0) {
-        const toCheck = queue.shift()!;
-
-        if (toCheck instanceof SnailNum) {
-          if (toCheck.depth >= 4) {
-            candidates.push(toCheck);
-          } else {
-            queue.unshift(toCheck.left);
-            queue.push(toCheck.right);
-          }
-        }
-      }
-    } else {
-      while (queue.length > 0) {
-        const toCheck = queue.shift()!;
-
-        if (toCheck instanceof SnailNum) {
-          if (typeof toCheck.left === 'number' && toCheck.left >= 10) {
-            candidates.push(toCheck);
-          } else if (typeof toCheck.right === 'number' && toCheck.right >= 10) {
-            candidates.push(toCheck);
-          } else {
-            queue.unshift(toCheck.left);
-            queue.push(toCheck.right);
-          }
-        }
+      if (toCheck instanceof SnailNum) {
+        stack.push(toCheck.right);
+        stack.push(toCheck.left);
+      } else if (toCheck >= 10) {
+        return toCheck;
       }
     }
-
-    let paths: string[][] = [];
-
-    if (candidates.length === 0) {
-      return null;
-    }
-
-    candidates.forEach((candidate) => {
-      paths.push(candidate.reconstructPath());
-    });
-
-    while (candidates.length > 1) {
-      const removedIdxs: number[] = [];
-
-      while (
-        paths.every((el) => {
-          return el[0] === 'right';
-        })
-      ) {
-        paths = paths.map((el) => {
-          return el.slice(1);
-        });
-      }
-
-      candidates.forEach((_, idx) => {
-        if (paths[idx][0] === 'right') {
-          removedIdxs.push(idx);
-        }
-      });
-
-      paths = paths
-        .filter((_, idx) => {
-          return !removedIdxs.includes(idx);
-        })
-        .map((el) => {
-          return el.slice(1);
-        });
-
-      candidates = candidates.filter((_, idx) => {
-        return !removedIdxs.includes(idx);
-      });
-    }
-
-    return candidates[0];
+    return null;
   }
 
   split() {
-    const toSplit = this.getCandidate('split');
+    const toSplit = this.getSplitCandidate();
 
     if (toSplit === null) {
       return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
@@ -165,19 +101,11 @@ export class SnailNum {
 
     let asStr = `${JSON.stringify(this.turnIntoArr())}`;
 
-    if (typeof toSplit.left === 'number' && toSplit.left >= 10) {
-      const newLeft = Math.floor(toSplit.left / 2);
-      const newRight = Math.ceil(toSplit.left / 2);
+    const newLeft = Math.floor(toSplit / 2);
+    const newRight = Math.ceil(toSplit / 2);
+    const repl = `[${newLeft},${newRight}]`;
 
-      toSplit.left = new SnailNum(newLeft, newRight);
-    } else if (typeof toSplit.right === 'number' && toSplit.right >= 10) {
-      const newLeft = Math.floor(toSplit.right / 2);
-      const newRight = Math.ceil(toSplit.right / 2);
-
-      toSplit.right = new SnailNum(newLeft, newRight);
-    }
-
-    return [true, JSON.stringify(this.turnIntoArr())] as [boolean, string];
+    return [true, asStr.replace(toSplit.toString(), repl)] as [boolean, string];
   }
 
   explode() {
@@ -186,7 +114,7 @@ export class SnailNum {
     const nodes = this.allNodes.filter((el) => {
       return typeof el !== 'number';
     }) as SnailNum[];
-    const candidate = this.getCandidate('explode');
+    const candidate = this.getExplodeCandidate();
 
     if (!candidate) {
       return [false, JSON.stringify(this.turnIntoArr())] as [boolean, string];
@@ -196,9 +124,6 @@ export class SnailNum {
 
     let leftLookup = candidateIdx - 1;
     let rightLookup = candidateIdx + 1;
-
-    // console.log('exploding');
-    // console.log(JSON.stringify(this.turnIntoArr()));
 
     while (leftLookup >= 0) {
       const checking = nodes[leftLookup];
@@ -233,10 +158,6 @@ export class SnailNum {
       candidate.prev!.right = 0;
     }
 
-    // console.log('product');
-    // console.log(JSON.stringify(this.turnIntoArr()));
-    // console.log('');
-
     return [true, JSON.stringify(this.turnIntoArr())] as [boolean, string];
   }
 
@@ -250,6 +171,15 @@ export class SnailNum {
     if (typeof node.right !== 'number') {
       this.flatten(node.right);
     }
+  }
+
+  getMagnitude(arr: any) {
+    const [left, right] = arr;
+    const leftValue: any = Array.isArray(left) ? this.getMagnitude(left) : left;
+    const rightValue: any = Array.isArray(right)
+      ? this.getMagnitude(right)
+      : right;
+    return 3 * leftValue + 2 * rightValue;
   }
 }
 
@@ -286,50 +216,14 @@ export function processSnailSum(num1: SnailNum, num2: SnailNum) {
   return currStage;
 }
 
-// const arr1 = [
-//   [
-//     [
-//       [7, 0],
-//       [7, 7],
-//     ],
-//     [
-//       [7, 7],
-//       [7, 8],
-//     ],
-//   ],
-//   [
-//     [
-//       [7, 7],
-//       [8, 8],
-//     ],
-//     [
-//       [7, 7],
-//       [8, 7],
-//     ],
-//   ],
-// ];
+let num1 = new SnailNum(inputArr[0][0], inputArr[0][1]);
 
-// const arr2 = [
-//   7,
-//   [
-//     5,
-//     [
-//       [3, 8],
-//       [1, 4],
-//     ],
-//   ],
-// ];
+const queue = [...inputArr.slice(1)];
 
-// let num1 = new SnailNum(arr1[0], arr1[1]);
-// const num2 = new SnailNum(arr2[0], arr2[1]);
+while (queue.length > 0) {
+  const toProcess = queue.shift();
+  const toAdd = new SnailNum(toProcess[0], toProcess[1]);
 
-// num1 = processSnailSum(num1, num2);
-
-// console.log(JSON.stringify(num1.turnIntoArr()));
-// console.log(
-//   JSON.stringify(num1.turnIntoArr()) ===
-//     '[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]'
-// );
-
-// ('[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[6,8],[0,8]],[[9,9],[9,0]]]]');
-// ('[[[[7,7],[7,8]],[[9,5],[8,7]]],[[[7,8],[0,8]],[[8,9],[9,0]]]]');
+  num1 = processSnailSum(num1, toAdd);
+}
+console.log(num1.getMagnitude(num1.turnIntoArr()));
