@@ -173,7 +173,7 @@ export class SnailNum {
     }
   }
 
-  getMagnitude(arr: any) {
+  getMagnitude(arr: any = this.turnIntoArr()) {
     const [left, right] = arr;
     const leftValue: any = Array.isArray(left) ? this.getMagnitude(left) : left;
     const rightValue: any = Array.isArray(right)
@@ -226,4 +226,4 @@ while (queue.length > 0) {
 
   num1 = processSnailSum(num1, toAdd);
 }
-console.log(num1.getMagnitude(num1.turnIntoArr()));
+console.log(num1.getMagnitude());
