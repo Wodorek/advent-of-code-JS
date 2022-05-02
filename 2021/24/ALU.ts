@@ -26,6 +26,7 @@ export class ALU {
     inp: (p1: any, p2: any) => {
       const val = this.checking.shift()!;
       this.vars[p1 as keyof typeof this.vars] = val;
+      console.log(this.vars);
     },
     add: (p1: any, p2: any) => {
       const toAdd = !isNaN(p2) ? +p2 : this.vars[p2 as keyof typeof this.vars];
