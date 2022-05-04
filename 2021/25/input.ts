@@ -1,0 +1,9 @@
+const input = `...>...
+.......
+......>
+v.....>
+......>
+.......
+..vvv..`;
+
+export default input;
