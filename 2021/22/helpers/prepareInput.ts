@@ -1,3 +1,5 @@
+import { Action } from '../types';
+
 const prepareInput = (str: string) => {
   return str.split('\n').map((el) => {
     const split = el.split(' ');
@@ -11,7 +13,10 @@ const prepareInput = (str: string) => {
 
       return [+split[0], +split[1]];
     });
-    return [directive, coords] as [number, number[][]];
+    return [
+      directive,
+      { x: [...coords[0]], y: [...coords[1]], z: [...coords[2]] },
+    ] as Action;
   });
 };
 

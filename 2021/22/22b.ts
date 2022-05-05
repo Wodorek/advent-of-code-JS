@@ -1,33 +1,141 @@
+import { Cube } from './types';
+
 import input from './input';
+
 import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-const cubes: { [key: string]: number } = {};
+function common(minA = 0, maxA = 0, minB = 0, maxB = 0) {
+  const min = Math.max(minA, minB);
+  const max = Math.min(maxA, maxB);
 
-for (let i = 0; i < inputArr.length; i++) {
-  const coords = inputArr[i][1];
-  const directive = inputArr[i][0];
+  if (min <= max) return [min, max];
 
-  for (let x = coords[0][0]; x < coords[0][1] + 1; x++) {
-    for (let y = coords[1][0]; y < coords[1][1] + 1; y++) {
-      for (let z = coords[2][0]; z < coords[2][1] + 1; z++) {
-        cubes[`${x},${y},${z}`] = directive;
-      }
-    }
-  }
+  return false;
 }
 
-const keys = Object.keys(cubes);
+const exclude = (cubeA: Cube, cubeInner: Cube) => {
+  const cubes: Cube[] = [];
+  const [xMinA, xMaxA] = cubeA.x;
+  const [yMinA, yMaxA] = cubeA.y;
+  const [zMinA, zMaxA] = cubeA.z;
+  let [xMinInner, xMaxInner] = cubeInner.x;
+  let [yMinInner, yMaxInner] = cubeInner.y;
+  let [zMinInner, zMaxInner] = cubeInner.z;
 
-let count = 0;
+  // Upper cube (x and y limited to inner)
+  if (zMaxA > zMaxInner)
+    cubes.push({
+      x: [xMinInner, xMaxInner],
+      y: [yMinInner, yMaxInner],
+      z: [zMaxInner + 1, zMaxA],
+    });
 
-console.log('you will never see it');
+  // Lower cube (x and y limited to inner)
+  if (zMinA < zMinInner)
+    cubes.push({
+      x: [xMinInner, xMaxInner],
+      y: [yMinInner, yMaxInner],
+      z: [zMinA, zMinInner - 1],
+    });
 
-keys.forEach((key) => {
-  if (cubes[key] === 1) {
-    count++;
-  }
+  // Forward cube (x limited to inner)
+  if (yMaxA > yMaxInner)
+    cubes.push({
+      x: [xMinInner, xMaxInner],
+      y: [yMaxInner + 1, yMaxA],
+      z: [zMinA, zMaxA],
+    });
+
+  // Backward cube (x limited to inner)
+  if (yMinA < yMinInner)
+    cubes.push({
+      x: [xMinInner, xMaxInner],
+      y: [yMinA, yMinInner - 1],
+      z: [zMinA, zMaxA],
+    });
+
+  // Left cube (no limits)
+  if (xMinA < xMinInner)
+    cubes.push({
+      x: [xMinA, xMinInner - 1],
+      y: [yMinA, yMaxA],
+      z: [zMinA, zMaxA],
+    });
+
+  // Right cube (no limits)
+  if (xMaxA > xMaxInner)
+    cubes.push({
+      x: [xMaxInner + 1, xMaxA],
+      y: [yMinA, yMaxA],
+      z: [zMinA, zMaxA],
+    });
+
+  return cubes;
+};
+
+const intersect = (cubeA: Cube, cubeB: Cube) => {
+  const [xMinA, xMaxA] = cubeA.x;
+  const [yMinA, yMaxA] = cubeA.y;
+  const [zMinA, zMaxA] = cubeA.z;
+  const [xMinB, xMaxB] = cubeB.x;
+  const [yMinB, yMaxB] = cubeB.y;
+  const [zMinB, zMaxB] = cubeB.z;
+  const commonX = common(xMinA, xMaxA, xMinB, xMaxB);
+  const commonY = common(yMinA, yMaxA, yMinB, yMaxB);
+  const commonZ = common(zMinA, zMaxA, zMinB, zMaxB);
+
+  if (!commonX || !commonY || !commonZ) return false;
+
+  const commonCube = {
+    x: commonX,
+    y: commonY,
+    z: commonZ,
+  };
+  const uniqueCubes = exclude(cubeA, commonCube);
+
+  return [commonCube, uniqueCubes];
+};
+
+const mapIntersect = (cubeA: Cube, cubeB: Cube) => {
+  const intersectResult = intersect(cubeA, cubeB);
+
+  if (intersectResult) return intersectResult[1];
+
+  return cubeA;
+};
+
+const calcCubeSum = (cube: Cube) => {
+  const [xMin, xMax] = cube.x;
+  const [yMin, yMax] = cube.y;
+  const [zMin, zMax] = cube.z;
+
+  return (xMax - xMin + 1) * (yMax - yMin + 1) * (zMax - zMin + 1);
+};
+
+const sumAllCubes = (cubes: Cube[]) =>
+  cubes.reduce((sum, cube) => sum + calcCubeSum(cube), 0);
+
+let addedCubes: Cube[] = [];
+
+inputArr.forEach((action) => {
+  if (action[0] === 1) {
+    let cubesToAdd = [{ x: action[1].x, y: action[1].y, z: action[1].z }];
+
+    addedCubes.forEach(
+      (cubeB) =>
+        (cubesToAdd = cubesToAdd
+          .map((cubeA) => mapIntersect(cubeA, cubeB))
+          .flat())
+    );
+    cubesToAdd.forEach((cube) => addedCubes.push(cube));
+  } else
+    addedCubes = addedCubes
+      .map((cubeA) =>
+        mapIntersect(cubeA, { x: action[1].x, y: action[1].y, z: action[1].z })
+      )
+      .flat();
 });
 
-console.log(count);
+console.log(sumAllCubes(addedCubes));
