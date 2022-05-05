@@ -1,11 +1,13 @@
-function prepareInput(input: string) {
+type Point = [x: number, y: number, z: number];
+
+function prepareInput(input: string): Point[][] {
   const split = input.split('\n').filter((el) => {
     return el !== '';
   });
 
-  const scanners: any[][][] = [];
+  const scanners: Point[][] = [];
 
-  let scanner: any[][] = [];
+  let scanner: Point[] = [];
 
   for (let i = 0; i < split.length; i++) {
     const element = split[i];
