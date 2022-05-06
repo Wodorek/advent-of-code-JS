@@ -1,27 +1,90 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
+import countActiveAround from './helpers/countActiveAround';
 
 const inputArr = prepareInput(input);
 
-inputArr.forEach((line) => {
-  console.log(line.join(''));
-});
+function expandCube(cube: string[][][]) {
+  const fillLength = cube[0][0].length;
 
-const expandIntoCube = (arr: string[][]) => {
-  const cube: string[][][] = [arr];
+  const fillRow = new Array(fillLength);
+  fillRow.fill('.');
 
-  for (let i = 0; i < arr.length - 1; i++) {
-    const slice = [];
+  const fillSlice: string[][] = [];
+  fillSlice.length = fillLength;
 
-    for (let j = 0; j < arr.length; j++) {
-      slice.push(new Array(arr.length).fill('.'));
-    }
+  fillSlice.fill(fillRow);
 
-    cube.push(slice);
-  }
+  const newCube = [fillSlice, ...cube, fillSlice];
 
-  return cube;
-};
+  const finalCube = newCube.map((slice) => {
+    const newRow = ['.', ...fillRow, '.'];
 
-console.log(expandIntoCube(inputArr));
+    return [
+      newRow,
+      ...slice.map((el) => {
+        return ['.', ...el, '.'];
+      }),
+      newRow,
+    ];
+  });
+  return finalCube;
+}
+
+function countActive(cube: string[][][]) {
+  let total = 0;
+
+  cube.forEach((slice) => {
+    slice.forEach((row) => {
+      row.forEach((voxel) => {
+        if (voxel === '#') {
+          total++;
+        }
+      });
+    });
+  });
+
+  return total;
+}
+
+function processCube(cube: string[][][]) {
+  const expandedCube = expandCube(cube);
+
+  const newCube = expandedCube.map((slice, sliceIdx) => {
+    return slice.map((row, rowIdx) => {
+      return row.map((voxel, voxelIdx) => {
+        const onAround = countActiveAround(
+          expandedCube,
+          sliceIdx,
+          rowIdx,
+          voxelIdx
+        );
+
+        if (voxel === '#') {
+          if (onAround === 2 || onAround === 3) {
+            return '#';
+          } else {
+            return '.';
+          }
+        } else {
+          if (onAround === 3) {
+            return '#';
+          } else {
+            return '.';
+          }
+        }
+      });
+    });
+  });
+
+  return newCube;
+}
+
+let currCube = inputArr;
+
+for (let i = 0; i < 6; i++) {
+  currCube = processCube(currCube);
+}
+
+console.log(countActive(currCube));
