@@ -11,12 +11,12 @@ function calculate(numString: string) {
 
   const split = numString.split('');
 
-  // numString.split('').forEach((el) => {
-  //   if (el === '+' || el === '*') {
-  //     operations[currOp] = el;
-  //     currOp++;
-  //   }
-  // });
+  numString.split('').forEach((el) => {
+    if (el === '+' || el === '*') {
+      operations[currOp] = el;
+      currOp++;
+    }
+  });
 
   console.log(
     split.filter((el) => {
