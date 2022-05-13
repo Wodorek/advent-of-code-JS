@@ -5,6 +5,8 @@ import input from './input';
 
 import prepareInput from './helpers/prepareInput';
 
+const inputArr = prepareInput(input);
+
 function weirdSum2(str: string) {
   const split = str.split('').filter((el) => {
     return el !== ' ';
