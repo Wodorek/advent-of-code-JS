@@ -4,17 +4,10 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-console.log(inputArr);
-
-const tileset: string[][] = [];
-
-const ids = Object.keys(inputArr);
-
-const chunkSize = 3;
-
 class Tile {
   id: string;
-  possibleSides: string[];
+  sides: string[];
+  possibleNeighbors: Set<string> = new Set<string>();
 
   constructor(tileLines: string[], id: string) {
     const possibleSides: string[] = [
@@ -38,8 +31,33 @@ class Tile {
       right.reverse().join('')
     );
 
-    this.possibleSides = possibleSides;
+    this.sides = possibleSides;
     this.id = id;
+  }
+}
+
+class Jigsaw {
+  tileset: Tile[];
+
+  constructor(tileset: Tile[]) {
+    this.tileset = tileset;
+  }
+
+  findPossibleNeighbors() {
+    for (let i = 0; i < this.tileset.length; i++) {
+      const checking = this.tileset[i];
+
+      for (let j = i + 1; j < this.tileset.length; j++) {
+        const possibleNeigbor = this.tileset[j];
+
+        checking.sides.forEach((side) => {
+          if (possibleNeigbor.sides.includes(side)) {
+            checking.possibleNeighbors.add(possibleNeigbor.id);
+            possibleNeigbor.possibleNeighbors.add(checking.id);
+          }
+        });
+      }
+    }
   }
 }
 
@@ -49,12 +67,16 @@ for (let key in inputArr) {
   tiles.push(new Tile(inputArr[key], key));
 }
 
-console.log(tiles);
+const jigsaw = new Jigsaw(tiles);
+jigsaw.findPossibleNeighbors();
 
-class Jigsaw {
-  tileset: Tile[];
+let solution = 1;
 
-  constructor(tileset: Tile[]) {
-    this.tileset = tileset;
+jigsaw.tileset.forEach((el) => {
+  if (el.possibleNeighbors.size === 2) {
+    console.log(el.possibleNeighbors);
+    solution *= +el.id;
   }
-}
+});
+
+console.log(solution);
