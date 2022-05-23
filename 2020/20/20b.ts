@@ -59,6 +59,12 @@ class Jigsaw {
       }
     }
   }
+
+  get getCornerTiles() {
+    return this.tileset.filter((tile) => {
+      return tile.possibleNeighbors.size === 2;
+    });
+  }
 }
 
 const tiles = [];
@@ -69,22 +75,6 @@ for (let key in inputArr) {
 
 const jigsaw = new Jigsaw(tiles);
 jigsaw.findPossibleNeighbors();
+const firstCorner = jigsaw.getCornerTiles[0];
 
-let solution = 1;
-
-jigsaw.tileset.forEach((el) => {
-  if (el.possibleNeighbors.size === 2) {
-    console.log(el.id);
-  }
-});
-
-console.log(
-  jigsaw.tileset.filter((el) => {
-    return el.id === '1543';
-  })
-);
-
-console.log(inputArr['1543']);
-
-//add orientation recognition to each?
-//???
+console.log(firstCorner);
