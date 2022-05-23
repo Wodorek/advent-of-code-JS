@@ -50,7 +50,7 @@ class Jigsaw {
       for (let j = i + 1; j < this.tileset.length; j++) {
         const possibleNeigbor = this.tileset[j];
 
-        checking.sides.forEach((side) => {
+        checking.sides.forEach((side, idx) => {
           if (possibleNeigbor.sides.includes(side)) {
             checking.possibleNeighbors.add(possibleNeigbor.id);
             possibleNeigbor.possibleNeighbors.add(checking.id);
@@ -74,12 +74,17 @@ let solution = 1;
 
 jigsaw.tileset.forEach((el) => {
   if (el.possibleNeighbors.size === 2) {
-    console.log(el.possibleNeighbors);
-    solution *= +el.id;
+    console.log(el.id);
   }
 });
 
-console.log(solution);
+console.log(
+  jigsaw.tileset.filter((el) => {
+    return el.id === '1543';
+  })
+);
+
+console.log(inputArr['1543']);
 
 //add orientation recognition to each?
 //???
