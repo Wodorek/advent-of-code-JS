@@ -1,5 +1,5 @@
-function flipHorizontal(matrix: string[][]) {
-  const flipped: string[][] = [];
+function flipHorizontal<T>(matrix: T[][]) {
+  const flipped: T[][] = [];
   flipped.length = matrix.length;
 
   for (let i = 0; i < matrix.length; i++) {
