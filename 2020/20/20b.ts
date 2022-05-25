@@ -1,6 +1,8 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
+import flipHorizontal from './helpers/flipHorizontal';
+import flipVertical from './helpers/flipVertical';
 
 const inputArr = prepareInput(input);
 
@@ -10,13 +12,6 @@ class Tile {
   possibleNeighbors: Set<string> = new Set<string>();
 
   constructor(tileLines: string[], id: string) {
-    const possibleSides: string[] = [
-      tileLines[0],
-      tileLines[tileLines.length - 1],
-      tileLines[0].split('').reverse().join(''),
-      tileLines[tileLines.length - 1].split('').reverse().join(''),
-    ];
-
     const left: string[] = [];
     const right: string[] = [];
     tileLines.forEach((line) => {
@@ -24,14 +19,17 @@ class Tile {
       right.push(line[line.length - 1]);
     });
 
-    possibleSides.push(
-      left.join(''),
+    this.sides = [
+      tileLines[0],
       right.join(''),
+      tileLines[tileLines.length - 1],
+      left.join(''),
+      tileLines[0].split('').reverse().join(''),
+      right.reverse().join(''),
+      tileLines[tileLines.length - 1].split('').reverse().join(''),
       left.reverse().join(''),
-      right.reverse().join('')
-    );
+    ];
 
-    this.sides = possibleSides;
     this.id = id;
   }
 }
@@ -50,7 +48,7 @@ class Jigsaw {
       for (let j = i + 1; j < this.tileset.length; j++) {
         const possibleNeigbor = this.tileset[j];
 
-        checking.sides.forEach((side, idx) => {
+        checking.sides.forEach((side) => {
           if (possibleNeigbor.sides.includes(side)) {
             checking.possibleNeighbors.add(possibleNeigbor.id);
             possibleNeigbor.possibleNeighbors.add(checking.id);
@@ -65,6 +63,26 @@ class Jigsaw {
       return tile.possibleNeighbors.size === 2;
     });
   }
+
+  getConnectionPoints(tileId: string) {
+    const foundTile = this.tileset.filter((tile) => tile.id === tileId)[0];
+
+    const neighbors = this.tileset.filter((tile) =>
+      foundTile.possibleNeighbors.has(tile.id)
+    );
+
+    const connections: { [key: string]: number } = {};
+
+    neighbors.forEach((neighbor) => {
+      foundTile.sides.forEach((side, idx) => {
+        if (neighbor.sides.includes(side)) {
+          connections[neighbor.id] = idx;
+        }
+      });
+    });
+
+    return connections;
+  }
 }
 
 const tiles = [];
@@ -76,5 +94,24 @@ for (let key in inputArr) {
 const jigsaw = new Jigsaw(tiles);
 jigsaw.findPossibleNeighbors();
 const firstCorner = jigsaw.getCornerTiles[0];
+console.log(firstCorner.id);
 
-console.log(firstCorner);
+const testTile = inputArr[firstCorner.id].map((el) => {
+  return el.split('');
+});
+
+console.log(firstCorner.sides);
+
+const flipped = flipHorizontal(testTile);
+
+testTile.forEach((line) => {
+  console.log(line.join(''));
+});
+
+console.log('');
+
+flipped.forEach((line) => {
+  console.log(line.join(''));
+});
+
+console.log(jigsaw.getConnectionPoints(firstCorner.id));
