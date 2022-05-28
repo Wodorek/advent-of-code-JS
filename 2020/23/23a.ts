@@ -8,24 +8,73 @@ class ListNode {
   }
 }
 
-class LinkedList {
+class CupList {
   head: ListNode | null = null;
+  length = 0;
+
+  getAtIndex(index: number) {
+    if (index >= 0 && index <= this.length) {
+      let node = this.head;
+
+      for (let i = 0; i < index && node !== null; i++) {
+        node = node.next;
+      }
+
+      return node;
+    }
+    return undefined;
+  }
+
+  getOfValue(val: number) {
+    let node = this.head;
+
+    for (let i = 0; i < this.length; i++) {
+      if (node!.val === val) {
+        return node;
+      }
+
+      node = node!.next;
+    }
+  }
 
   addNode(val: number) {
+    const node = new ListNode(val);
+
     if (!this.head) {
-      this.head = new ListNode(val);
-    } else {
-      const temp = this.head;
-      const node = new ListNode(val);
       this.head = node;
-      node.next = temp;
+    } else {
+      const current = this.getAtIndex(this.length - 1)!;
+      current.next = node;
     }
+
+    node.next = this.head;
+    this.length++;
+  }
+
+  parseCups(cups: string) {
+    const parsed = cups.split('').map(Number);
+
+    parsed.forEach((cup) => {
+      this.addNode(cup);
+    });
+  }
+
+  convertToString() {
+    let str = '';
+
+    let node = this.head;
+
+    for (let i = 0; i < this.length; i++) {
+      str = str + node?.val;
+      node = node!.next;
+    }
+
+    return str;
   }
 }
 
-const list = new LinkedList();
-list.addNode(1);
-list.addNode(2);
-list.addNode(3);
-list.addNode(4);
-console.log(list);
+const initialCups = '389125467';
+
+const cupList = new CupList();
+cupList.parseCups(initialCups);
+console.log(cupList);
