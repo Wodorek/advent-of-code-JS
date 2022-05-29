@@ -59,8 +59,35 @@ class CupList {
     });
   }
 
-  pickUpCups(from: number) {
-    const start = this.getAtIndex(from);
+  moveCups(from: number) {
+    const start = this.getAtIndex(from)!;
+
+    let toRemove = start.next!;
+    let cupSlice = start.next!;
+
+    for (let i = 0; i < 2; i++) {
+      toRemove = toRemove.next!;
+    }
+
+    start.next = toRemove.next;
+
+    toRemove.next = null;
+
+    const sliceValues: number[] = [];
+
+    let slice = cupSlice;
+
+    while (slice.next) {
+      sliceValues.push(slice.val);
+      slice = slice.next;
+    }
+    sliceValues.push(slice.val);
+
+    console.log(sliceValues);
+
+    console.log('cs', cupSlice);
+
+    console.log(this.convertToString());
   }
 
   convertToString() {
@@ -77,8 +104,9 @@ class CupList {
   }
 }
 
-const initialCups = '389125467';
+const initialCups = '123456789';
 
 const cupList = new CupList();
 cupList.parseCups(initialCups);
+cupList.moveCups(0);
 console.log(cupList);
