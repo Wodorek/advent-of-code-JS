@@ -59,6 +59,10 @@ class CupList {
     });
   }
 
+  pickUpCups(from: number) {
+    const start = this.getAtIndex(from);
+  }
+
   convertToString() {
     let str = '';
 
