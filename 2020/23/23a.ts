@@ -86,8 +86,6 @@ class CupList {
     console.log(sliceValues);
 
     console.log('cs', cupSlice);
-
-    console.log(this.convertToString());
   }
 
   convertToString() {
