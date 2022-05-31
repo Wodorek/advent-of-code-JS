@@ -28,6 +28,8 @@ class CupList {
   getOfValue(val: number) {
     let node = this.head;
 
+    console.log(val);
+
     for (let i = 0; i < this.length; i++) {
       if (node!.val === val) {
         return node;
@@ -35,6 +37,18 @@ class CupList {
 
       node = node!.next;
     }
+  }
+
+  findIndex(val: number) {
+    let idx = 0;
+    let node = this.head;
+
+    while (node!.val !== val) {
+      node = node!.next;
+      idx++;
+    }
+
+    return idx;
   }
 
   addNode(val: number) {
@@ -62,6 +76,8 @@ class CupList {
   moveCups(from: number) {
     const start = this.getAtIndex(from)!;
 
+    const startVal = start.val;
+
     let toRemove = start.next!;
     let cupSlice = start.next!;
 
@@ -73,19 +89,28 @@ class CupList {
 
     toRemove.next = null;
 
-    const sliceValues: number[] = [];
+    const cupSliceEnd = cupSlice.next!.next;
 
-    let slice = cupSlice;
+    let targetVal = startVal - 1;
 
-    while (slice.next) {
-      sliceValues.push(slice.val);
-      slice = slice.next;
+    let target = this.getOfValue(targetVal);
+
+    console.log(this.convertToString());
+
+    while (target === undefined) {
+      targetVal--;
+      if (targetVal < 0) {
+        targetVal = this.length;
+      }
+      target = this.getOfValue(targetVal);
     }
-    sliceValues.push(slice.val);
 
-    console.log(sliceValues);
+    const temp = target!.next;
 
-    console.log('cs', cupSlice);
+    target!.next = cupSlice;
+    cupSliceEnd!.next = temp;
+
+    return this.findIndex(this.getOfValue(startVal)!.next!.val);
   }
 
   convertToString() {
@@ -100,11 +125,29 @@ class CupList {
 
     return str;
   }
+
+  getAfter(val: number) {
+    let str = '';
+
+    let node = this.getOfValue(val);
+
+    for (let i = 0; i < this.length; i++) {
+      str = str + node?.val;
+      node = node!.next;
+    }
+
+    return str;
+  }
 }
 
-const initialCups = '123456789';
+const initialCups = '389125467';
+
+let idx = 0;
 
 const cupList = new CupList();
 cupList.parseCups(initialCups);
-cupList.moveCups(0);
-console.log(cupList);
+
+for (let i = 0; i < 10; i++) {
+  const newIdx = cupList.moveCups(idx);
+  idx = newIdx;
+}
