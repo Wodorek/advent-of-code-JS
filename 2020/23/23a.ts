@@ -28,8 +28,6 @@ class CupList {
   getOfValue(val: number) {
     let node = this.head;
 
-    console.log(val);
-
     for (let i = 0; i < this.length; i++) {
       if (node!.val === val) {
         return node;
@@ -66,6 +64,8 @@ class CupList {
   }
 
   parseCups(cups: string) {
+    this.head = null;
+
     const parsed = cups.split('').map(Number);
 
     parsed.forEach((cup) => {
@@ -74,43 +74,32 @@ class CupList {
   }
 
   moveCups(from: number) {
-    const start = this.getAtIndex(from)!;
+    const start = this.getAtIndex(from);
 
-    const startVal = start.val;
+    this.head = start!;
+    const pickupsStart = this.head!.next;
+    const pickupEnd = pickupsStart!.next!.next;
 
-    let toRemove = start.next!;
-    let cupSlice = start.next!;
+    this.head.next = pickupEnd!.next;
+    this.length -= 3;
 
-    for (let i = 0; i < 2; i++) {
-      toRemove = toRemove.next!;
-    }
+    let destinationVal = this.head.val - 1;
+    let destinationNode = this.getOfValue(destinationVal);
 
-    start.next = toRemove.next;
-
-    toRemove.next = null;
-
-    const cupSliceEnd = cupSlice.next!.next;
-
-    let targetVal = startVal - 1;
-
-    let target = this.getOfValue(targetVal);
-
-    console.log(this.convertToString());
-
-    while (target === undefined) {
-      targetVal--;
-      if (targetVal < 0) {
-        targetVal = this.length;
+    while (destinationNode === undefined) {
+      destinationVal--;
+      if (destinationVal === -1) {
+        destinationVal = this.length + 3;
       }
-      target = this.getOfValue(targetVal);
+      destinationNode = this.getOfValue(destinationVal);
     }
 
-    const temp = target!.next;
+    const temp = destinationNode!.next;
 
-    target!.next = cupSlice;
-    cupSliceEnd!.next = temp;
+    destinationNode!.next = pickupsStart;
+    pickupEnd!.next = temp;
 
-    return this.findIndex(this.getOfValue(startVal)!.next!.val);
+    this.length += 3;
   }
 
   convertToString() {
@@ -131,7 +120,9 @@ class CupList {
 
     let node = this.getOfValue(val);
 
-    for (let i = 0; i < this.length; i++) {
+    node = node!.next;
+
+    for (let i = 0; i < this.length - 1; i++) {
       str = str + node?.val;
       node = node!.next;
     }
@@ -140,14 +131,16 @@ class CupList {
   }
 }
 
-const initialCups = '389125467';
+const cups = '598162734';
+const cupList = new CupList();
+cupList.parseCups(cups);
 
 let idx = 0;
 
-const cupList = new CupList();
-cupList.parseCups(initialCups);
+for (let i = 0; i < 100; i++) {
+  cupList.moveCups(idx);
 
-for (let i = 0; i < 10; i++) {
-  const newIdx = cupList.moveCups(idx);
-  idx = newIdx;
+  idx = 1;
 }
+
+console.log(cupList.getAfter(1));
