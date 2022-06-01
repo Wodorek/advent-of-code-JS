@@ -27,18 +27,6 @@ class CupList {
     return undefined;
   }
 
-  getOfValue(val: number) {
-    let node = this.head;
-
-    for (let i = 0; i < this.length; i++) {
-      if (node!.val === val) {
-        return node;
-      }
-
-      node = node!.next;
-    }
-  }
-
   findIndex(val: number) {
     let idx = 0;
     let node = this.head;
@@ -113,14 +101,6 @@ class CupList {
 
     let destinationNode = this.nodeLookup[destinationVal];
 
-    // while (destinationNode === undefined) {
-    //   destinationVal--;
-    //   if (destinationVal === -1) {
-    //     destinationVal = this.length;
-    //   }
-    //   destinationNode = this.getOfValue(destinationVal);
-    // }
-
     const temp = destinationNode!.next;
 
     destinationNode!.next = pickupsStart;
@@ -143,13 +123,13 @@ class CupList {
   getAfter(val: number) {
     let str = '';
 
-    let node = this.getOfValue(val);
+    let node = this.nodeLookup[val];
 
-    node = node!.next;
+    node = node.next!;
 
     for (let i = 0; i < this.length - 1; i++) {
       str = str + node?.val;
-      node = node!.next;
+      node = node.next!;
     }
 
     return str;
@@ -180,7 +160,7 @@ for (let i = 0; i < 10000000; i++) {
   idx = 1;
 }
 
-const afterOne = cupList.getOfValue(1)!.next;
+const afterOne = cupList.nodeLookup[1]!.next;
 
 const val1 = afterOne!.val;
 const val2 = afterOne!.next!.val;
