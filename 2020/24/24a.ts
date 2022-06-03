@@ -5,9 +5,9 @@ import prepareInput from './helpers/prepareInput';
 const inputArr = prepareInput(input);
 
 interface CubeCoords {
-  s: number;
   q: number;
   r: number;
+  s: number;
 }
 
 const movementMap = {
@@ -37,7 +37,7 @@ function parsePath(pathString: string) {
 
 function move(position: CubeCoords, move: string[]) {
   move.forEach((step) => {
-    const [s, q, r] = movementMap[step as keyof typeof movementMap];
+    const [q, r, s] = movementMap[step as keyof typeof movementMap];
 
     position.s += s;
     position.q += q;
