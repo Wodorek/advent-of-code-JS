@@ -4,83 +4,79 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-interface Position {
-  e: number;
-  ne: number;
+interface CubeCoords {
+  s: number;
+  q: number;
+  r: number;
 }
 
-function parseIntoMoves(line: string) {
-  const regexes = {
-    se: new RegExp('se', 'g'),
-    ne: new RegExp('ne', 'g'),
-    sw: new RegExp('sw', 'g'),
-    nw: new RegExp('nw', 'g'),
-    e: new RegExp('e', 'g'),
-    w: new RegExp('w', 'g'),
-  };
+const movementMap = {
+  ne: [1, -1, 0],
+  e: [1, 0, -1],
+  se: [0, 1, -1],
+  sw: [-1, 1, 0],
+  w: [-1, 0, 1],
+  nw: [0, -1, 1],
+};
 
-  const regexKeys = Object.keys(regexes);
+function parsePath(pathString: string) {
+  let parsed = pathString;
+  parsed = parsed
+    .replaceAll('ne', 'ne,')
+    .replaceAll('se', 'se,')
+    .replaceAll('sw', 'sw,')
+    .replaceAll('nw', 'nw,')
+    .replaceAll('e', 'e,')
+    .replaceAll('w', 'w,')
+    .replaceAll(',,', ',');
 
-  const moves: { [key: string]: number } = {};
+  //who needs regex anyway
 
-  regexKeys.forEach((key) => {
-    const matches = line.match(regexes[key as keyof typeof regexes]);
-
-    moves[key] = matches?.length ? matches.length : 0;
-  });
-
-  moves['e'] = moves['e'] - moves['se'] - moves['ne'];
-  moves['w'] = moves['w'] - moves['sw'] - moves['nw'];
-
-  return moves;
+  return parsed.split(',');
 }
 
-function move(moves: { [key: string]: number }) {}
+function move(position: CubeCoords, move: string[]) {
+  move.forEach((step) => {
+    const [s, q, r] = movementMap[step as keyof typeof movementMap];
 
-// true === black
-const tilePositions: { [key: string]: boolean } = {};
-
-inputArr.forEach((line) => {
-  const moves = parseIntoMoves(line);
-
-  const currPosition: Position = {
-    e: 0,
-    ne: 0,
-  };
-
-  Object.keys(moves).forEach((key) => {
-    if (key === 'ne') {
-      currPosition['ne'] += moves[key];
-    } else if (key === 'e') {
-      currPosition['e'] += moves[key];
-    } else if (key === 'se') {
-      currPosition['ne'] -= moves[key];
-      currPosition['e'] += moves[key];
-    } else if (key === 'sw') {
-      currPosition['ne'] -= moves[key];
-    } else if (key === 'w') {
-      currPosition['e'] -= moves[key];
-    } else if (key === 'nw') {
-      currPosition['ne'] += moves[key];
-      currPosition['e'] -= moves[key];
-    }
+    position.s += s;
+    position.q += q;
+    position.r += r;
   });
 
-  const tileId = `${currPosition['e']},${currPosition['ne']}`;
+  return position;
+}
 
-  if (tilePositions[tileId]) {
-    tilePositions[tileId] = !tilePositions[tileId];
+const paths = inputArr.map((pathString) => {
+  return parsePath(pathString).filter((el) => el !== '');
+});
+
+const hexes: { [key: string]: boolean } = {};
+
+paths.forEach((path) => {
+  const position: CubeCoords = {
+    q: 0,
+    r: 0,
+    s: 0,
+  };
+
+  const newPosition = move(position, path);
+
+  const cubeId = `${newPosition.q},${newPosition.r},${newPosition.s}`;
+
+  if (hexes[cubeId]) {
+    hexes[cubeId] = !hexes[cubeId];
   } else {
-    tilePositions[tileId] = true;
+    hexes[cubeId] = true;
   }
 });
 
 let totalBlack = 0;
 
-Object.keys(tilePositions).forEach((tile) => {
-  if (tilePositions[tile]) {
+for (const hex in hexes) {
+  if (hexes[hex]) {
     totalBlack++;
   }
-});
+}
 
 console.log(totalBlack);
