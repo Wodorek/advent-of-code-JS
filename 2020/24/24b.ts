@@ -144,17 +144,13 @@ class Tile {
       return el === true;
     }).length;
 
-    if (this.isBlack) {
-      if (blackAround === 0 || blackAround > 2) {
-        this.isBlack = !this.isBlack;
-      }
-    } else {
-      if (blackAround === 2) {
-        this.isBlack = !this.isBlack;
-      }
+    if (blackAround === 0 || blackAround > 2) {
+      this.isBlack = !this.isBlack;
     }
   }
 }
+
+// white -> black if b === 2
 
 const blackTilesCoords = getInitialTiles(inputArr);
 
@@ -170,28 +166,30 @@ tiles.forEach((tile) => {
   tile.findNeighbors(blackTilesCoords);
 });
 
-function surroundWithWhite(blackTiles: Tile[], positionSet: Set<string>) {
+function surroundWithWhite(blackTileCoords: string[]) {
   const sides = ['0,-1,1', '1,-1,0', '1,0,-1', '0,1,-1', '-1,1,0', '-1,0,1'];
 
-  const expandedTiles = [...blackTiles];
+  const neighbors: { [key: string]: number } = {};
 
-  blackTiles.forEach((tile) => {
-    const [btq, btr, bts] = [tile.position.q, tile.position.r, tile.position.s];
+  blackTileCoords.forEach((black) => {
+    const [q, r, s] = black.split(',').map(Number);
 
     sides.forEach((side) => {
-      const [q, r, s] = side.split(',').map(Number);
+      const [dq, dr, ds] = side.split(',').map(Number);
 
-      const neighboringTilePos = `${btq + q},${btr + r},${bts + s}`;
+      const id = `${q + dq},${r + dr},${s + ds}`;
 
-      if (!positionSet.has(neighboringTilePos)) {
-        const neigborTile = new Tile(neighboringTilePos);
-        expandedTiles.push(neigborTile);
-        positionSet.add(neighboringTilePos);
+      if (!blackTileCoords.includes(id)) {
+        if (neighbors[id]) {
+          neighbors[id]++;
+        } else {
+          neighbors[id] = 1;
+        }
       }
     });
   });
 
-  return expandedTiles;
+  return Object.keys(neighbors).filter((key) => neighbors[key] === 2);
 }
 
 function flipTiles(blackTilesCoords: string[]) {
@@ -209,16 +207,16 @@ function flipTiles(blackTilesCoords: string[]) {
     tiles.push(tile);
   });
 
-  const fullGrid = surroundWithWhite(tiles, coordsSet);
+  const fromSurroundingWhite = surroundWithWhite(blackTilesCoords);
 
   const newBlackTiles: string[] = [];
 
-  fullGrid.forEach((tile) => {
+  tiles.forEach((tile) => {
     tile.findNeighbors(blackTilesCoords);
     tile.flipTile();
   });
 
-  fullGrid.forEach((tile) => {
+  tiles.forEach((tile) => {
     if (tile.isBlack) {
       newBlackTiles.push(
         `${tile.position.q},${tile.position.r},${tile.position.s}`
@@ -226,12 +224,13 @@ function flipTiles(blackTilesCoords: string[]) {
     }
   });
 
-  return newBlackTiles;
+  return [...newBlackTiles, ...fromSurroundingWhite];
 }
 
 let blackTiles = blackTilesCoords;
 
 for (let i = 0; i < 100; i++) {
+  console.log(i);
   blackTiles = flipTiles(blackTiles);
 }
 
