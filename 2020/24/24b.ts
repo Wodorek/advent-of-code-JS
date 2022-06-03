@@ -4,102 +4,98 @@ import prepareInput from './helpers/prepareInput';
 
 const inputArr = prepareInput(input);
 
-interface Position {
-  e: number;
-  ne: number;
+interface CubeCoords {
+  q: number;
+  r: number;
+  s: number;
 }
 
-function parseIntoMoves(line: string) {
-  const regexes = {
-    se: new RegExp('se', 'g'),
-    ne: new RegExp('ne', 'g'),
-    sw: new RegExp('sw', 'g'),
-    nw: new RegExp('nw', 'g'),
-    e: new RegExp('e', 'g'),
-    w: new RegExp('w', 'g'),
-  };
+const movementMap = {
+  ne: [1, -1, 0],
+  e: [1, 0, -1],
+  se: [0, 1, -1],
+  sw: [-1, 1, 0],
+  w: [-1, 0, 1],
+  nw: [0, -1, 1],
+};
 
-  const regexKeys = Object.keys(regexes);
+function parsePath(pathString: string) {
+  let parsed = pathString;
+  parsed = parsed
+    .replaceAll('ne', 'ne,')
+    .replaceAll('se', 'se,')
+    .replaceAll('sw', 'sw,')
+    .replaceAll('nw', 'nw,')
+    .replaceAll('e', 'e,')
+    .replaceAll('w', 'w,')
+    .replaceAll(',,', ',');
 
-  const moves: { [key: string]: number } = {};
+  //who needs regex anyway
 
-  regexKeys.forEach((key) => {
-    const matches = line.match(regexes[key as keyof typeof regexes]);
+  return parsed.split(',');
+}
 
-    moves[key] = matches?.length ? matches.length : 0;
+function move(position: CubeCoords, move: string[]) {
+  move.forEach((step) => {
+    const [s, q, r] = movementMap[step as keyof typeof movementMap];
+
+    position.s += s;
+    position.q += q;
+    position.r += r;
   });
 
-  moves['e'] = moves['e'] - moves['se'] - moves['ne'];
-  moves['w'] = moves['w'] - moves['sw'] - moves['nw'];
-
-  return moves;
+  return position;
 }
 
-// true === black
-const tilePositions: { [key: string]: boolean } = {};
+function getInitialTiles(pathStrings: string[]) {
+  const paths = pathStrings.map((pathString) => {
+    return parsePath(pathString).filter((el) => el !== '');
+  });
 
-inputArr.forEach((line) => {
-  const moves = parseIntoMoves(line);
+  const hexes: { [key: string]: boolean } = {};
 
-  const currPosition: Position = {
-    e: 0,
-    ne: 0,
-  };
+  paths.forEach((path) => {
+    const position: CubeCoords = {
+      q: 0,
+      r: 0,
+      s: 0,
+    };
 
-  // here change to nw/se axis
-  Object.keys(moves).forEach((key) => {
-    if (key === 'ne') {
-      currPosition['ne'] += moves[key];
-    } else if (key === 'e') {
-      currPosition['e'] += moves[key];
-    } else if (key === 'se') {
-      currPosition['ne'] -= moves[key];
-      currPosition['e'] += moves[key];
-    } else if (key === 'sw') {
-      currPosition['ne'] -= moves[key];
-    } else if (key === 'w') {
-      currPosition['e'] -= moves[key];
-    } else if (key === 'nw') {
-      currPosition['ne'] += moves[key];
-      currPosition['e'] -= moves[key];
+    const newPosition = move(position, path);
+
+    const cubeId = `${newPosition.q},${newPosition.r},${newPosition.s}`;
+
+    if (hexes[cubeId]) {
+      hexes[cubeId] = !hexes[cubeId];
+    } else {
+      hexes[cubeId] = true;
     }
   });
 
-  const tileId = `${currPosition['e']},${currPosition['ne']}`;
+  const blackTilesCoords = Object.keys(hexes).filter(
+    (hex) => hexes[hex] === true
+  );
 
-  if (tilePositions[tileId]) {
-    tilePositions[tileId] = !tilePositions[tileId];
-  } else {
-    tilePositions[tileId] = true;
-  }
-});
-
-const tileKeys = Object.keys(tilePositions);
-
-const blackTiles = tileKeys.filter((el) => {
-  return tilePositions[el as keyof typeof tilePositions] === true;
-});
-
-// you need to change the axis
-
-console.log(blackTiles.length);
+  return blackTilesCoords;
+}
 
 class Tile {
-  position: Position;
+  position: CubeCoords;
+  // 'q,r,s'
   neighbors: {
-    '0,-1': boolean;
-    '-1,0': boolean;
-    '-1,1': boolean;
-    '0,1': boolean;
-    '1,0': boolean;
-    '1,-1': boolean;
+    '0,-1,1': boolean;
+    '1,-1,0': boolean;
+    '1,0,-1': boolean;
+    '0,1,-1': boolean;
+    '-1,1,0': boolean;
+    '-1,0,1': boolean;
   } = {
-    '0,-1': false,
-    '-1,0': false,
-    '-1,1': false,
-    '0,1': false,
-    '1,0': false,
-    '1,-1': false,
+    '0,-1,1': false,
+    '1,-1,0': false,
+    '1,0,-1': false,
+    '0,1,-1': false,
+    '-1,1,0': false,
+    '-1,0,1': false,
   };
 
   isBlack: boolean = false;
@@ -107,7 +103,7 @@ class Tile {
   constructor(pos: string) {
     const positions = pos.split(',').map(Number);
 
-    this.position = { e: positions[0], ne: positions[1] };
+    this.position = { q: positions[0], r: positions[1], s: positions[2] };
   }
 
   findNeighbors(otherTiles: string[]) {
@@ -116,12 +112,16 @@ class Tile {
     });
 
     sides.forEach((side) => {
-      const [sx, sy] = side;
+      const [dq, dr, ds] = side;
 
       otherTiles.forEach((tile) => {
-        const [x, y] = tile.split(',').map(Number);
+        const [q, r, s] = tile.split(',').map(Number);
 
-        if (this.position.e + sx === x && this.position.ne + sy === y) {
+        if (
+          this.position.q + dq === q &&
+          this.position.r + dr === r &&
+          this.position.s + ds === s
+        ) {
           this.neighbors[side.join(',') as keyof typeof this.neighbors] = true;
         }
       });
@@ -130,12 +130,12 @@ class Tile {
 
   discardNeighbors() {
     this.neighbors = {
-      '0,-1': false,
-      '-1,0': false,
-      '-1,1': false,
-      '0,1': false,
-      '1,0': false,
-      '1,-1': false,
+      '0,-1,1': false,
+      '1,-1,0': false,
+      '1,0,-1': false,
+      '0,1,-1': false,
+      '-1,1,0': false,
+      '-1,0,1': false,
     };
   }
 
@@ -156,18 +156,32 @@ class Tile {
   }
 }
 
+const blackTilesCoords = getInitialTiles(inputArr);
+
+const tiles: Tile[] = [];
+
+blackTilesCoords.forEach((tile) => {
+  const blackTile = new Tile(tile);
+  blackTile.isBlack = true;
+  tiles.push(blackTile);
+});
+
+tiles.forEach((tile) => {
+  tile.findNeighbors(blackTilesCoords);
+});
+
 function surroundWithWhite(blackTiles: Tile[], positionSet: Set<string>) {
-  const sides = ['0,-1', '-1,0', '-1,1', '0,1', '1,0', '1,-1'];
+  const sides = ['0,-1,1', '1,-1,0', '1,0,-1', '0,1,-1', '-1,1,0', '-1,0,1'];
 
   const expandedTiles = [...blackTiles];
 
   blackTiles.forEach((tile) => {
-    const [btx, bty] = [tile.position.e, tile.position.ne];
+    const [btq, btr, bts] = [tile.position.q, tile.position.r, tile.position.s];
 
     sides.forEach((side) => {
-      const [x, y] = side.split(',').map(Number);
+      const [q, r, s] = side.split(',').map(Number);
 
-      const neighboringTilePos = `${btx + x},${bty + y}`;
+      const neighboringTilePos = `${btq + q},${btr + r},${bts + s}`;
 
       if (!positionSet.has(neighboringTilePos)) {
         const neigborTile = new Tile(neighboringTilePos);
@@ -200,41 +214,25 @@ function flipTiles(blackTilesCoords: string[]) {
   const newBlackTiles: string[] = [];
 
   fullGrid.forEach((tile) => {
-    tile.findNeighbors(blackTiles);
-    // tile.flipTile();
+    tile.findNeighbors(blackTilesCoords);
+    tile.flipTile();
   });
-
-  console.log(fullGrid);
 
   fullGrid.forEach((tile) => {
     if (tile.isBlack) {
-      newBlackTiles.push(`${tile.position.e},${tile.position.ne}`);
+      newBlackTiles.push(
+        `${tile.position.q},${tile.position.r},${tile.position.s}`
+      );
     }
   });
-
-  console.log('nt', newBlackTiles.length);
 
   return newBlackTiles;
 }
 
-let currentlyBlack = [
-  '-1,-2',
-  '0,-3',
-  '-2,0',
-  '-1,1',
-  '-1,-1',
-  '0,0',
-  '-2,1',
-  '-1,-3',
-  '-3,1',
-  '-2,2',
-  '0,1',
-  '0,-1',
-  '1,-1',
-  '2,-1',
-  '1,0',
-];
-currentlyBlack = flipTiles(currentlyBlack);
-console.log(currentlyBlack);
+let blackTiles = blackTilesCoords;
 
-for (let i = 0; i > 2; i++) {}
+for (let i = 0; i < 100; i++) {
+  blackTiles = flipTiles(blackTiles);
+}
+
+console.log(blackTiles.length);
