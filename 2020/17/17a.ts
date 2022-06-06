@@ -1,90 +1,97 @@
 import input from './input';
 
-import prepareInput from './helpers/prepareInput';
-import countActiveAround from './helpers/countActiveAround';
+const inputArr = input.split('\n').map((el) => el.split(''));
 
-const inputArr = prepareInput(input);
-
-function expandCube(cube: string[][][]) {
-  const fillLength = cube[0][0].length;
-
-  const fillRow = new Array(fillLength);
-  fillRow.fill('.');
-
-  const fillSlice: string[][] = [];
-  fillSlice.length = fillLength;
-
-  fillSlice.fill(fillRow);
-
-  const newCube = [fillSlice, ...cube, fillSlice];
-
-  const finalCube = newCube.map((slice) => {
-    const newRow = ['.', ...fillRow, '.'];
-
-    return [
-      newRow,
-      ...slice.map((el) => {
-        return ['.', ...el, '.'];
-      }),
-      newRow,
-    ];
-  });
-  return finalCube;
+interface CubesMap {
+  [key: string]: boolean;
 }
 
-function countActive(cube: string[][][]) {
-  let total = 0;
+const cubesMap: CubesMap = {};
 
-  cube.forEach((slice) => {
-    slice.forEach((row) => {
-      row.forEach((voxel) => {
-        if (voxel === '#') {
-          total++;
+const cubeSize = 4 + 6 * 2;
+const minimal = cubeSize * -1;
+
+for (let z = minimal; z <= cubeSize; z++) {
+  for (let y = minimal; y <= cubeSize; y++) {
+    for (let x = minimal; x <= cubeSize; x++) {
+      const id = `${z},${y},${x}`;
+
+      cubesMap[id] = false;
+    }
+  }
+}
+
+//change the -1 here
+inputArr.forEach((column, cidx) => {
+  column.forEach((row, ridx) => {
+    const id = `0,${cidx - 3},${ridx - 3}`;
+
+    if (row === '#') {
+      cubesMap[id] = true;
+    }
+  });
+});
+
+function findNeighbors(position: string, cubesMap: CubesMap) {
+  const [z, y, x] = position.split(',').map(Number);
+
+  let totalBlack = 0;
+
+  for (let i = z - 1; i <= z + 1; i++) {
+    for (let j = y - 1; j <= y + 1; j++) {
+      for (let k = x - 1; k <= x + 1; k++) {
+        const neighborId = `${i},${j},${k}`;
+
+        if (cubesMap[neighborId] === true && neighborId !== position) {
+          totalBlack++;
         }
-      });
-    });
-  });
+      }
+    }
+  }
 
-  return total;
+  return totalBlack;
 }
 
-function processCube(cube: string[][][]) {
-  const expandedCube = expandCube(cube);
+function countBlack(cubesMap: CubesMap) {
+  let totalBlack = 0;
 
-  const newCube = expandedCube.map((slice, sliceIdx) => {
-    return slice.map((row, rowIdx) => {
-      return row.map((voxel, voxelIdx) => {
-        const onAround = countActiveAround(
-          expandedCube,
-          sliceIdx,
-          rowIdx,
-          voxelIdx
-        );
-
-        if (voxel === '#') {
-          if (onAround === 2 || onAround === 3) {
-            return '#';
-          } else {
-            return '.';
-          }
-        } else {
-          if (onAround === 3) {
-            return '#';
-          } else {
-            return '.';
-          }
-        }
-      });
-    });
+  Object.keys(cubesMap).forEach((key) => {
+    if (cubesMap[key] === true) {
+      totalBlack++;
+    }
   });
 
-  return newCube;
+  return totalBlack;
 }
 
-let currCube = inputArr;
+function processCubes(cubesMap: CubesMap) {
+  const allCubes = Object.keys(cubesMap);
+
+  const newMap: CubesMap = {};
+
+  allCubes.forEach((cube) => {
+    const neigborsCount = findNeighbors(cube, cubesMap);
+
+    if (cubesMap[cube] === true) {
+      if (neigborsCount === 2 || neigborsCount === 3) {
+        newMap[cube] = true;
+      } else [(newMap[cube] = false)];
+    } else {
+      if (neigborsCount === 3) {
+        newMap[cube] = true;
+      } else {
+        newMap[cube] = false;
+      }
+    }
+  });
+
+  return newMap;
+}
+
+let currentMap = cubesMap;
 
 for (let i = 0; i < 6; i++) {
-  currCube = processCube(currCube);
+  currentMap = processCubes(currentMap);
 }
 
-console.log(countActive(currCube));
+console.log(countBlack(currentMap));
