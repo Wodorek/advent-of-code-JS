@@ -37,14 +37,14 @@ class Tile {
     });
 
     this.sides = [
-      tileLines[0],
-      right.join(''),
-      tileLines[tileLines.length - 1],
-      left.join(''),
-      tileLines[0].split('').reverse().join(''),
-      right.reverse().join(''),
-      tileLines[tileLines.length - 1].split('').reverse().join(''),
-      left.reverse().join(''),
+      tileLines[0], //0
+      right.join(''), //1
+      tileLines[tileLines.length - 1], //2
+      left.join(''), //3
+      tileLines[0].split('').reverse().join(''), //4
+      right.reverse().join(''), //5
+      tileLines[tileLines.length - 1].split('').reverse().join(''), //6
+      left.reverse().join(''), //7
     ];
 
     this.id = id;
@@ -84,6 +84,8 @@ class Jigsaw {
   getConnectionPoints(tileId: string) {
     const foundTile = this.tileset.filter((tile) => tile.id === tileId)[0];
 
+    console.log(foundTile);
+
     const neighbors = this.tileset.filter((tile) =>
       foundTile.possibleNeighbors.has(tile.id)
     );
@@ -91,9 +93,12 @@ class Jigsaw {
     const connections: { [key: string]: number } = {};
 
     neighbors.forEach((neighbor) => {
-      foundTile.sides.forEach((side, idx) => {
-        if (neighbor.sides.includes(side)) {
-          connections[neighbor.id] = idx;
+      neighbor.sides.forEach((side) => {
+        const sideIdx = foundTile.sides.indexOf(side);
+
+        if (sideIdx !== -1) {
+          console.log(sideIdx);
+          connections[neighbor.id] = sideIdx;
         }
       });
     });
@@ -111,11 +116,10 @@ for (let key in inputArr) {
 const jigsaw = new Jigsaw(tiles);
 
 jigsaw.findPossibleNeighbors();
-const firstCorner = jigsaw.getCornerTiles[0];
-console.log(firstCorner.id);
-console.log(jigsaw.getConnectionPoints('2971'));
 
-let testTile = inputArr[2971].map((el) => {
+console.log(jigsaw.getConnectionPoints('1951'));
+
+let testTile = inputArr[1951].map((el) => {
   return el.split('');
 });
 
@@ -123,14 +127,10 @@ testTile.forEach((line) => {
   console.log(line.join(''));
 });
 
-// console.log(firstCorner.sides);
-
-const flipped = flipVertical(rotateClockwise(rotateClockwise(testTile)));
+const flipped = flipVertical(testTile);
 
 console.log('');
 
 flipped.forEach((line) => {
   console.log(line.join(''));
 });
-
-// console.log('c', jigsaw.getConnectionPoints(firstCorner.id));
