@@ -3,6 +3,23 @@ import input from './input';
 import prepareInput from './helpers/prepareInput';
 import flipHorizontal from './helpers/flipHorizontal';
 import flipVertical from './helpers/flipVertical';
+import rotateClockwise from './helpers/rotateClockwise';
+
+interface IMove {
+  r: number;
+  f: 'h' | 'v' | null;
+}
+
+const movesMap: { [key: string]: IMove } = {
+  '1,2,3,4': { r: 0, f: null },
+  '7,0,5,2': { r: 1, f: null },
+  '6,7,4,5': { r: 2, f: null },
+  '1,6,3,4': { r: 3, f: null },
+  '4,3,6,1': { r: 0, f: 'h' },
+  '2,5,0,7': { r: 0, f: 'v' },
+  '3,2,1,0': { r: 1, f: 'h' },
+  '5,4,7,6': { r: 1, f: 'v' },
+};
 
 const inputArr = prepareInput(input);
 
@@ -92,21 +109,23 @@ for (let key in inputArr) {
 }
 
 const jigsaw = new Jigsaw(tiles);
+
 jigsaw.findPossibleNeighbors();
 const firstCorner = jigsaw.getCornerTiles[0];
 console.log(firstCorner.id);
+console.log(jigsaw.getConnectionPoints('2971'));
 
-const testTile = inputArr[firstCorner.id].map((el) => {
+let testTile = inputArr[2971].map((el) => {
   return el.split('');
 });
-
-console.log(firstCorner.sides);
-
-const flipped = flipHorizontal(testTile);
 
 testTile.forEach((line) => {
   console.log(line.join(''));
 });
+
+// console.log(firstCorner.sides);
+
+const flipped = flipVertical(rotateClockwise(rotateClockwise(testTile)));
 
 console.log('');
 
@@ -114,4 +133,4 @@ flipped.forEach((line) => {
   console.log(line.join(''));
 });
 
-console.log(jigsaw.getConnectionPoints(firstCorner.id));
+// console.log('c', jigsaw.getConnectionPoints(firstCorner.id));
