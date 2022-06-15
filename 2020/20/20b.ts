@@ -21,6 +21,23 @@ const movesMap: { [key: string]: IMove } = {
   '5,4,7,6': { r: 1, f: 'v' },
 };
 
+const possibleSideMap: { [key: string]: number[] } = {
+  t: [],
+  r: [],
+  b: [],
+  l: [],
+};
+
+Object.keys(movesMap).forEach((key) => {
+  const [t, r, b, l] = key.split(',').map(Number);
+  possibleSideMap.t.push(t);
+  possibleSideMap.r.push(r);
+  possibleSideMap.b.push(b);
+  possibleSideMap.l.push(l);
+});
+
+console.log(possibleSideMap);
+
 const inputArr = prepareInput(input);
 
 class Tile {
@@ -53,9 +70,20 @@ class Tile {
 
 class Jigsaw {
   tileset: Tile[];
+  size: number = 0;
+  grid: string[][] = [];
 
   constructor(tileset: Tile[]) {
     this.tileset = tileset;
+    this.size = Math.sqrt(tileset.length);
+    this.grid.length = this.size;
+
+    for (let i = 0; i < this.grid.length; i++) {
+      const row: string[] = [];
+      row.length = this.size;
+      row.fill('');
+      this.grid[i] = row;
+    }
   }
 
   findPossibleNeighbors() {
@@ -75,10 +103,28 @@ class Jigsaw {
     }
   }
 
-  get getCornerTiles() {
+  getCornerTiles() {
     return this.tileset.filter((tile) => {
       return tile.possibleNeighbors.size === 2;
     });
+  }
+
+  setFirstCorner() {
+    const cornerTiles = this.getCornerTiles();
+
+    const firstCorner = cornerTiles[1];
+
+    const connections = this.getConnectionPoints(firstCorner.id);
+
+    const sidesAvailable = ['t','r']
+
+    
+
+
+
+    console.log(connections);
+
+    this.grid[0][0] = firstCorner.id;
   }
 
   getConnectionPoints(tileId: string) {
@@ -90,7 +136,7 @@ class Jigsaw {
       foundTile.possibleNeighbors.has(tile.id)
     );
 
-    const connections: { [key: string]: number } = {};
+    const connections: { [key: string]: number[] } = {};
 
     neighbors.forEach((neighbor) => {
       neighbor.sides.forEach((side) => {
@@ -98,7 +144,10 @@ class Jigsaw {
 
         if (sideIdx !== -1) {
           console.log(sideIdx);
-          connections[neighbor.id] = sideIdx;
+          if (!connections[neighbor.id]) {
+            connections[neighbor.id] = [];
+          }
+          connections[neighbor.id].push(sideIdx);
         }
       });
     });
@@ -114,23 +163,6 @@ for (let key in inputArr) {
 }
 
 const jigsaw = new Jigsaw(tiles);
-
 jigsaw.findPossibleNeighbors();
-
-console.log(jigsaw.getConnectionPoints('1951'));
-
-let testTile = inputArr[1951].map((el) => {
-  return el.split('');
-});
-
-testTile.forEach((line) => {
-  console.log(line.join(''));
-});
-
-const flipped = flipVertical(testTile);
-
-console.log('');
-
-flipped.forEach((line) => {
-  console.log(line.join(''));
-});
+jigsaw.setFirstCorner();
+console.log(jigsaw.grid);
