@@ -116,11 +116,9 @@ class Jigsaw {
 
     const connections = this.getConnectionPoints(firstCorner.id);
 
-    const sidesAvailable = ['t','r']
+    const sidesAvailable = ['t', 'r'];
 
-    
-
-
+    //r l
 
     console.log(connections);
 
