@@ -10,15 +10,46 @@ interface IMove {
   f: 'h' | 'v' | null;
 }
 
-const movesMap: { [key: string]: IMove } = {
-  '1,2,3,4': { r: 0, f: null },
-  '7,0,5,2': { r: 1, f: null },
-  '6,7,4,5': { r: 2, f: null },
-  '1,6,3,4': { r: 3, f: null },
-  '4,3,6,1': { r: 0, f: 'h' },
-  '2,5,0,7': { r: 0, f: 'v' },
-  '3,2,1,0': { r: 1, f: 'h' },
-  '5,4,7,6': { r: 1, f: 'v' },
+interface ISides {
+  top: number;
+  right: number;
+  bottom: number;
+  left: number;
+}
+
+const movesMap: { [key: string]: { move: IMove; sides: ISides } } = {
+  '1,2,3,4': {
+    move: { r: 0, f: null },
+    sides: { top: 1, right: 2, bottom: 3, left: 4 },
+  },
+  '7,0,5,2': {
+    move: { r: 1, f: null },
+    sides: { top: 7, right: 0, bottom: 5, left: 2 },
+  },
+  '6,7,4,5': {
+    move: { r: 2, f: null },
+    sides: { top: 6, right: 7, bottom: 4, left: 5 },
+  },
+  '1,6,3,4': {
+    move: { r: 3, f: null },
+    sides: { top: 1, right: 6, bottom: 3, left: 4 },
+  },
+  '4,3,6,1': {
+    move: { r: 0, f: 'v' },
+    sides: { top: 4, right: 3, bottom: 6, left: 1 },
+  },
+  '2,5,0,7': {
+    move: { r: 0, f: 'h' },
+    sides: { top: 2, right: 5, bottom: 0, left: 7 },
+  },
+  '3,2,1,0': {
+    move: { r: 1, f: 'v' },
+    sides: { top: 3, right: 2, bottom: 1, left: 0 },
+  },
+  '5,4,7,6': {
+    move: { r: 1, f: 'h' },
+    sides: { top: 5, right: 4, bottom: 7, left: 6 },
+  },
 };
 
 const possibleSideMap: { [key: string]: number[] } = {
@@ -42,10 +73,12 @@ const inputArr = prepareInput(input);
 
 class Tile {
   id: string;
-  sides: string[];
+  sides: string[] = [];
   possibleNeighbors: Set<string> = new Set<string>();
+  right: number | null = null;
+  down: number | null = null;
 
-  constructor(tileLines: string[], id: string) {
+  setPossibleSides(tileLines: string[]) {
     const left: string[] = [];
     const right: string[] = [];
     tileLines.forEach((line) => {
@@ -63,7 +96,10 @@ class Tile {
       tileLines[tileLines.length - 1].split('').reverse().join(''), //6
       left.reverse().join(''), //7
     ];
+  }
 
+  constructor(tileLines: string[], id: string) {
+    this.setPossibleSides(tileLines);
     this.id = id;
   }
 }
@@ -116,11 +152,26 @@ class Jigsaw {
 
     const connections = this.getConnectionPoints(firstCorner.id);
 
-    const sidesAvailable = ['t', 'r'];
-
-    //r l
-
     console.log(connections);
+
+    const [right, bottom] = Object.values(connections);
+
+    right.forEach((possibleRight) => {
+      bottom.forEach((possibleBottom) => {
+        Object.keys(movesMap).forEach((move) => {
+          const sides = movesMap[move].sides;
+
+          if (
+            sides.right === possibleRight &&
+            sides.bottom === possibleBottom
+          ) {
+            console.log(move);
+          }
+        });
+      });
+    });
+
+    console.log(bottom);
 
     this.grid[0][0] = firstCorner.id;
   }
@@ -163,4 +214,17 @@ for (let key in inputArr) {
 const jigsaw = new Jigsaw(tiles);
 jigsaw.findPossibleNeighbors();
 jigsaw.setFirstCorner();
+
+const tile = inputArr[1951].map((el) => {
+  return el.split('');
+});
+
+const flipped = flipHorizontal(tile);
+
+flipped.forEach((line) => {
+  console.log(line.join(''));
+});
+
+console.log(movesMap['2,5,0,7']);
+
 console.log(jigsaw.grid);
