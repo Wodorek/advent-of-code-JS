@@ -173,6 +173,8 @@ class Jigsaw {
 
     console.log(bottom);
 
+    //map rotations, rotate, reassign, done
+
     this.grid[0][0] = firstCorner.id;
   }
 
