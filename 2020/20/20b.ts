@@ -52,23 +52,6 @@ const movesMap: { [key: string]: { move: IMove; sides: ISides } } = {
   },
 };
 
-// const possibleSideMap: { [key: string]: number[] } = {
-//   t: [],
-//   r: [],
-//   b: [],
-//   l: [],
-// };
-
-// Object.keys(movesMap).forEach((key) => {
-//   const [t, r, b, l] = key.split(',').map(Number);
-//   possibleSideMap.t.push(t);
-//   possibleSideMap.r.push(r);
-//   possibleSideMap.b.push(b);
-//   possibleSideMap.l.push(l);
-// });
-
-// console.log(possibleSideMap);
-
 const inputArr = prepareInput(input);
 
 class Tile {
@@ -292,6 +275,30 @@ class Jigsaw {
         this.setNextRight(i + 1, j);
       }
     }
+
+    const solved = this.grid.map((row) => {
+      return row.map((id) => {
+        console.log(id);
+        const asTile = inputArr[id].map((line) => {
+          return line.split('');
+        });
+        const rotations = this.rotationMap[id].r;
+        let flip = this.rotationMap[id].f;
+        let manipulatedTile = asTile;
+
+        for (let i = 0; i > rotations; i++) {
+          manipulatedTile = rotateClockwise(manipulatedTile);
+        }
+        if (flip === 'h') {
+          manipulatedTile = flipHorizontal(manipulatedTile);
+        } else if (flip === 'v') {
+          manipulatedTile = flipVertical(manipulatedTile);
+        }
+        return manipulatedTile;
+      });
+    });
+
+    return solved;
   }
 }
 
@@ -303,25 +310,8 @@ for (let key in inputArr) {
 
 const jigsaw = new Jigsaw(tiles);
 jigsaw.findPossibleNeighbors();
-jigsaw.solveJigsaw();
+const solved = jigsaw.solveJigsaw();
 
-// jigsaw.setNextRight(0, 0);
-// jigsaw.setNextRight(0, 1);
-// jigsaw.setNextDown(0, 0);
-// jigsaw.setNextRight(1, 0);
-// jigsaw.setNextRight(1, 1);
-// jigsaw.setNextDown(1, 0);
-// jigsaw.setNextRight(2, 0);
-// jigsaw.setNextRight(2, 1);
-console.log(jigsaw.grid);
-console.log(jigsaw.rotationMap);
-
-// console.log(
-//   tiles.find((el) => {
-//     return el.id === '3079';
-//   })
-// );
-
-// flipped.forEach((line) => {
-//   console.log(line.join(''));
-// });
+solved[0][0].forEach((line) => {
+  console.log(line.join(''));
+});
