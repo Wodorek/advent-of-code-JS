@@ -331,19 +331,14 @@ function removeBorders(tiles: string[][][][]) {
 }
 
 function mergeBorders(tiles: string[][][][], puzzleSize: number) {
-  const tileSize = 8;
-
-  const merged = tiles.flat().flat().flat();
-
   const finalImage: string[][] = [];
-  finalImage.length = tileSize * puzzleSize;
-  finalImage.fill([]);
 
-  console.log(merged.length / puzzleSize);
-
-  for (let i = 0; i < puzzleSize; i++) {
-    for (let j = 0; j < merged.length / puzzleSize; j++) {}
+  for (let i = 0; i < puzzleSize * 8; i++) {
+    finalImage.push([]);
   }
+
+  const merged = tiles.flat(3);
+  console.log(merged);
 
   return finalImage;
 }
