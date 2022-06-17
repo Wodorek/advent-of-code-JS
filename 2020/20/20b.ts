@@ -312,6 +312,42 @@ const jigsaw = new Jigsaw(tiles);
 jigsaw.findPossibleNeighbors();
 const solved = jigsaw.solveJigsaw();
 
-solved[0][0].forEach((line) => {
-  console.log(line.join(''));
-});
+function removeBorders(tiles: string[][][][]) {
+  const bordersRemoved = tiles.map((row) => {
+    row.map((tile) => {
+      tile.splice(0, 1);
+      tile.splice(tile.length - 1, 1);
+      tile.forEach((tileLine) => {
+        tileLine.pop();
+        tileLine.shift();
+      });
+
+      return tile;
+    });
+    return row;
+  });
+
+  return bordersRemoved;
+}
+
+function mergeBorders(tiles: string[][][][], puzzleSize: number) {
+  const tileSize = 8;
+
+  const merged = tiles.flat().flat().flat();
+
+  const finalImage: string[][] = [];
+  finalImage.length = tileSize * puzzleSize;
+  finalImage.fill([]);
+
+  console.log(merged.length / puzzleSize);
+
+  for (let i = 0; i < puzzleSize; i++) {
+    for (let j = 0; j < merged.length / puzzleSize; j++) {}
+  }
+
+  return finalImage;
+}
+
+const withRemoved = removeBorders(solved);
+
+console.log(mergeBorders(withRemoved, 3));
