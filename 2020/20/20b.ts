@@ -226,16 +226,12 @@ class Jigsaw {
       })!;
 
       if (foundTile.sides.includes(compareTo as string)) {
-        console.log('found', foundTile.id);
-
         foundTile.possibleNeighbors.delete(tileToLeft.id);
         this.grid[row][column + 1] = foundTile.id;
         Object.keys(movesMap).forEach((move) => {
           if (
             movesMap[move].sides.left === foundTile.sides.indexOf(compareTo!)
           ) {
-            console.log(move);
-            console.log('witam');
             const sides = movesMap[move].sides;
             foundTile.top = foundTile.sides[sides.top];
             foundTile.right = foundTile.sides[sides.right];
@@ -251,7 +247,7 @@ class Jigsaw {
 
   setNextDown(row: number, column: number) {
     const tileToTop = this.tileset.find((el) => {
-      return this.grid[row - 1][column] === el.id;
+      return this.grid[row][column] === el.id;
     })!;
 
     const possibleDown = Array.from(tileToTop.possibleNeighbors);
@@ -264,28 +260,38 @@ class Jigsaw {
       })!;
 
       if (foundTile.sides.includes(compareTo as string)) {
-        console.log('found', foundTile.id);
-
         foundTile.possibleNeighbors.delete(tileToTop.id);
-        this.grid[row][column] = foundTile.id;
+        this.grid[row + 1][column] = foundTile.id;
         Object.keys(movesMap).forEach((move) => {
           if (
             movesMap[move].sides.top === foundTile.sides.indexOf(compareTo!)
           ) {
-            console.log('down', move);
             const sides = movesMap[move].sides;
             foundTile.top = foundTile.sides[sides.top];
             foundTile.right = foundTile.sides[sides.right];
             foundTile.down = foundTile.sides[sides.down];
             foundTile.left = foundTile.sides[sides.left];
 
-            console.log(movesMap[move]);
-
             this.rotationMap[foundTile.id] = movesMap[move].move;
           }
         });
       }
     });
+  }
+
+  solveJigsaw() {
+    this.setFirstCorner();
+    for (let i = 0; i < this.size - 1; i++) {
+      this.setNextRight(0, i);
+    }
+
+    for (let i = 0; i < this.size - 1; i++) {
+      this.setNextDown(i, 0);
+
+      for (let j = 0; j < this.size - 1; j++) {
+        this.setNextRight(i + 1, j);
+      }
+    }
   }
 }
 
@@ -297,11 +303,16 @@ for (let key in inputArr) {
 
 const jigsaw = new Jigsaw(tiles);
 jigsaw.findPossibleNeighbors();
-jigsaw.setFirstCorner();
+jigsaw.solveJigsaw();
 
-jigsaw.setNextRight(0, 0);
-jigsaw.setNextRight(0, 1);
-jigsaw.setNextDown(1, 0);
+// jigsaw.setNextRight(0, 0);
+// jigsaw.setNextRight(0, 1);
+// jigsaw.setNextDown(0, 0);
+// jigsaw.setNextRight(1, 0);
+// jigsaw.setNextRight(1, 1);
+// jigsaw.setNextDown(1, 0);
+// jigsaw.setNextRight(2, 0);
+// jigsaw.setNextRight(2, 1);
 console.log(jigsaw.grid);
 console.log(jigsaw.rotationMap);
 
