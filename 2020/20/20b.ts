@@ -4,6 +4,7 @@ import prepareInput from './helpers/prepareInput';
 import flipHorizontal from './helpers/flipHorizontal';
 import flipVertical from './helpers/flipVertical';
 import rotateClockwise from './helpers/rotateClockwise';
+import divideIntoChunks from './helpers/divideIntoChunks';
 
 interface IMove {
   r: number;
@@ -338,6 +339,17 @@ function mergeBorders(tiles: string[][][][], puzzleSize: number) {
   }
 
   const merged = tiles.flat(3);
+
+  const chunks = divideIntoChunks(merged, 8 * 8);
+
+  const smaller = divideIntoChunks(chunks[0], 8);
+
+  console.log(smaller.length);
+
+  for (let i = 0; i < 8; i++) {
+    finalImage[i].push(...smaller[i]);
+  }
+
   console.log(merged);
 
   return finalImage;
