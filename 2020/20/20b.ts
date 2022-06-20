@@ -279,7 +279,6 @@ class Jigsaw {
 
     const solved = this.grid.map((row) => {
       return row.map((id) => {
-        console.log(id);
         const asTile = inputArr[id].map((line) => {
           return line.split('');
         });
@@ -287,7 +286,8 @@ class Jigsaw {
         let flip = this.rotationMap[id].f;
         let manipulatedTile = asTile;
 
-        for (let i = 0; i > rotations; i++) {
+        for (let i = 0; i < rotations; i++) {
+          console.log('rotating:', id);
           manipulatedTile = rotateClockwise(manipulatedTile);
         }
         if (flip === 'h') {
@@ -334,32 +334,96 @@ function removeBorders(tiles: string[][][][]) {
 function mergeBorders(tiles: string[][][][], puzzleSize: number) {
   const finalImage: string[][] = [];
 
-  for (let i = 0; i < puzzleSize * 8; i++) {
+  for (let i = 0; i < puzzleSize * 8 * 2; i++) {
     finalImage.push([]);
   }
 
-  const merged = tiles.flat(3);
-
-  const chunks = divideIntoChunks(merged, 8 * 8 * puzzleSize);
-
-  chunks.forEach((chunk, idx) => {
-    const tiles = divideIntoChunks(chunk, 8 * 8);
-
-    tiles.forEach((tile) => {
-      const tileChunks = divideIntoChunks(tile, 8);
-
-      tileChunks.forEach((tileLine, lineIdx) => {
-        finalImage[idx * 8 + lineIdx].push(...tileLine);
+  tiles.forEach((tileRow, rowIdx) => {
+    tileRow.forEach((tileCol, tileIdx) => {
+      tileCol.forEach((tileLine, lineIdx) => {
+        finalImage[rowIdx * 8 + lineIdx].push(...tileLine);
       });
     });
   });
 
-  return finalImage;
+  return finalImage.filter((line) => {
+    return line.length > 0;
+  });
 }
 
+solved.forEach((row) => {
+  row.forEach((line) => {
+    line.forEach((char) => {
+      console.log(char.join(''));
+    });
+    console.log('');
+  });
+});
+
+console.log(jigsaw.grid);
+console.log(jigsaw.rotationMap);
+
 const withRemoved = removeBorders(solved);
-const mergedImage = mergeBorders(withRemoved, 3);
+
+let mergedImage = mergeBorders(withRemoved, 3);
+
+mergedImage = flipVertical(rotateClockwise(mergedImage));
 
 mergedImage.forEach((line) => {
   console.log(line.join(''));
 });
+
+const monster = `                  #
+#    ##    ##    ###
+ #  #  #  #  #  #   `;
+
+const mosterPartsCoords: [number, number][] = [];
+
+monster.split('\n').forEach((line, lineIdx) => {
+  line.split('').forEach((char, charIdx) => {
+    if (char === '#') {
+      mosterPartsCoords.push([lineIdx, charIdx]);
+    }
+  });
+});
+
+function takeLines(
+  arr: string[][],
+  rowStart: number,
+  colStart: number,
+  len: number,
+  linesNum: number
+) {
+  const lines = [];
+
+  for (let i = 0; i < linesNum; i++) {
+    lines.push(arr[rowStart + i].slice(colStart, colStart + len));
+  }
+
+  return lines;
+}
+
+function findMosters(arr: string[][]) {
+  const len = arr.length;
+
+  let totalMonsters = 0;
+
+  for (let i = 0; i < len - 2; i++) {
+    for (let j = 0; j < len; j++) {
+      const lines = takeLines(arr, i, j, len, 3);
+
+      const isMonster = mosterPartsCoords.every(([row, column]) => {
+        return lines[row][column] === '#';
+      });
+
+      if (isMonster) {
+        console.log(i, j);
+        totalMonsters++;
+      }
+    }
+  }
+
+  return totalMonsters;
+}
+
+console.log(findMosters(mergedImage));
