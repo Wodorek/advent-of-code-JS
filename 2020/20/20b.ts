@@ -340,21 +340,26 @@ function mergeBorders(tiles: string[][][][], puzzleSize: number) {
 
   const merged = tiles.flat(3);
 
-  const chunks = divideIntoChunks(merged, 8 * 8);
+  const chunks = divideIntoChunks(merged, 8 * 8 * puzzleSize);
 
-  const smaller = divideIntoChunks(chunks[0], 8);
+  chunks.forEach((chunk, idx) => {
+    const tiles = divideIntoChunks(chunk, 8 * 8);
 
-  console.log(smaller.length);
+    tiles.forEach((tile) => {
+      const tileChunks = divideIntoChunks(tile, 8);
 
-  for (let i = 0; i < 8; i++) {
-    finalImage[i].push(...smaller[i]);
-  }
-
-  console.log(merged);
+      tileChunks.forEach((tileLine, lineIdx) => {
+        finalImage[idx * 8 + lineIdx].push(...tileLine);
+      });
+    });
+  });
 
   return finalImage;
 }
 
 const withRemoved = removeBorders(solved);
+const mergedImage = mergeBorders(withRemoved, 3);
 
-console.log(mergeBorders(withRemoved, 3));
+mergedImage.forEach((line) => {
+  console.log(line.join(''));
+});
