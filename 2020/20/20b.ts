@@ -4,7 +4,6 @@ import prepareInput from './helpers/prepareInput';
 import flipHorizontal from './helpers/flipHorizontal';
 import flipVertical from './helpers/flipVertical';
 import rotateClockwise from './helpers/rotateClockwise';
-import divideIntoChunks from './helpers/divideIntoChunks';
 
 interface IMove {
   r: number;
@@ -52,6 +51,24 @@ const movesMap: { [key: string]: { move: IMove; sides: ISides } } = {
     sides: { top: 5, right: 4, down: 7, left: 6 },
   },
 };
+
+function processManipulation(
+  tile: string[][],
+  rotations: number,
+  flip: 'h' | 'v' | null
+) {
+  let manipulatedTile = tile;
+
+  for (let i = 0; i < rotations; i++) {
+    manipulatedTile = rotateClockwise(manipulatedTile);
+  }
+  if (flip === 'h') {
+    manipulatedTile = flipHorizontal(manipulatedTile);
+  } else if (flip === 'v') {
+    manipulatedTile = flipVertical(manipulatedTile);
+  }
+  return manipulatedTile;
+}
 
 const inputArr = prepareInput(input);
 
@@ -142,7 +159,7 @@ class Jigsaw {
   setFirstCorner() {
     const cornerTiles = this.getCornerTiles();
 
-    const firstCorner = cornerTiles[1];
+    const firstCorner = cornerTiles[0];
 
     const connections = this.getConnectionPoints(firstCorner.id);
 
@@ -161,8 +178,6 @@ class Jigsaw {
         });
       });
     });
-
-    //map rotations, rotate, reassign, done
 
     firstCorner.setSides(movesMap[orientation].sides);
 
@@ -284,17 +299,8 @@ class Jigsaw {
         });
         const rotations = this.rotationMap[id].r;
         let flip = this.rotationMap[id].f;
-        let manipulatedTile = asTile;
+        const manipulatedTile = processManipulation(asTile, rotations, flip);
 
-        for (let i = 0; i < rotations; i++) {
-          console.log('rotating:', id);
-          manipulatedTile = rotateClockwise(manipulatedTile);
-        }
-        if (flip === 'h') {
-          manipulatedTile = flipHorizontal(manipulatedTile);
-        } else if (flip === 'v') {
-          manipulatedTile = flipVertical(manipulatedTile);
-        }
         return manipulatedTile;
       });
     });
@@ -351,27 +357,9 @@ function mergeBorders(tiles: string[][][][], puzzleSize: number) {
   });
 }
 
-solved.forEach((row) => {
-  row.forEach((line) => {
-    line.forEach((char) => {
-      console.log(char.join(''));
-    });
-    console.log('');
-  });
-});
-
-console.log(jigsaw.grid);
-console.log(jigsaw.rotationMap);
-
 const withRemoved = removeBorders(solved);
 
-let mergedImage = mergeBorders(withRemoved, 3);
-
-mergedImage = flipVertical(rotateClockwise(mergedImage));
-
-mergedImage.forEach((line) => {
-  console.log(line.join(''));
-});
+const mergedImage = mergeBorders(withRemoved, jigsaw.size);
 
 const monster = `                  #
 #    ##    ##    ###
@@ -417,7 +405,6 @@ function findMosters(arr: string[][]) {
       });
 
       if (isMonster) {
-        console.log(i, j);
         totalMonsters++;
       }
     }
@@ -426,4 +413,33 @@ function findMosters(arr: string[][]) {
   return totalMonsters;
 }
 
-console.log(findMosters(mergedImage));
+let monstersFound = 0;
+
+for (let key in movesMap) {
+  const { r, f } = movesMap[key].move;
+
+  let solvedCopy = mergedImage.map((img) => img.map((line) => line));
+
+  solvedCopy = processManipulation(solvedCopy, r, f);
+
+  const totalMonsters = findMosters(solvedCopy);
+
+  if (totalMonsters > 0) {
+    monstersFound = totalMonsters;
+    break;
+  }
+}
+
+let solution = 0;
+
+solution -= monstersFound * 15;
+
+mergedImage.forEach((line) => {
+  line.forEach((char) => {
+    if (char === '#') {
+      solution++;
+    }
+  });
+});
+
+console.log(solution);
