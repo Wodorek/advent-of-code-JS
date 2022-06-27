@@ -18,9 +18,6 @@ const tileTypes = {
 
 while (vm.working) {
   vm.executeInstruction();
-
-  if (vm.outputs.length % 3 === 0) {
-  }
 }
 
 const gridInfo = chunkArray(vm.outputs, 3);
