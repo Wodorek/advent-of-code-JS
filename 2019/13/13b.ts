@@ -3,72 +3,61 @@ import input from './input';
 import prepareInput from './helpers/prepareInput';
 import { VM } from '../computer/VM';
 import chunkArray from './helpers/chunkArray';
-import drawDisplay from './helpers/drawDisplay';
 
 const inputArr = prepareInput(input);
-inputArr[0] = 2;
 
 const vm = new VM(inputArr);
 
-const ballPosition = [-1, -1];
-const paddlePosition = [-1, -1];
-
-let points = 0;
-
-const display: string[][] = [];
-display.length = 100;
-display.fill(new Array(50).fill('.'));
-
-const tiles = {
+const tileTypes = {
   0: '.',
   1: '|',
-  2: 'b',
-  3: '-',
-  4: 'o',
+  2: '#',
+  3: '_',
+  4: 'O',
 };
 
 while (vm.working) {
-  let joystickPosition = 0;
+  vm.executeInstruction();
 
-  if (paddlePosition[0] > ballPosition[0]) {
-    joystickPosition = -1;
-  }
-
-  if (paddlePosition[0] < ballPosition[0]) {
-    joystickPosition = 1;
-  }
-
-  vm.executeInstruction(joystickPosition);
-
-  if (vm.outputs.length > 3 && vm.outputs.length % 3 === 0) {
-    const tile = vm.outputs.slice(vm.outputs.length - 3);
-
-    if (tile[0] !== -1) {
-      display[tile[1]][tile[0]] = tiles[tile[2] as keyof typeof tiles];
-    }
-
-    if (tile[0] === -1 && tile[1] === 0) {
-      points = tile[2];
-    }
-
-    if (tile[2] === 3) {
-      ballPosition[0] = tile[0];
-      ballPosition[1] = tile[1];
-    }
-
-    if (tile[2] === 4) {
-      paddlePosition[0] = tile[0];
-      paddlePosition[1] = tile[1];
-    }
+  if (vm.outputs.length % 3 === 0) {
   }
 }
 
-const chunks = chunkArray(vm.outputs, 3);
+const gridInfo = chunkArray(vm.outputs, 3);
 
-chunks.forEach((chunk) => {
-  display[chunk[1]][chunk[0]] = tiles[chunk[2] as keyof typeof tiles];
+let maxWidth = -Infinity;
+let maxHeight = -Infinity;
+
+gridInfo.forEach((tile) => {
+  maxWidth = Math.max(maxHeight, tile[0]);
+  maxHeight = Math.max(maxHeight, tile[1]);
 });
 
-display.forEach((line) => {
-  console.log(line.join(' '));
+const grid: string[][] = [];
+
+for (let i = 0; i < maxHeight + 1; i++) {
+  const arr = new Array();
+  arr.length = maxWidth + 1;
+  arr.fill('.');
+  grid.push(arr);
+}
+
+gridInfo.forEach((tile) => {
+  grid[tile[1]][tile[0]] = tileTypes[tile[2] as keyof typeof tileTypes];
 });
+
+grid.forEach((line) => {
+  console.log(line.join(''));
+});
+
+let totalBlocks = 0;
+
+grid.forEach((line) => {
+  line.forEach((char) => {
+    if (char === '#') {
+      totalBlocks++;
+    }
+  });
+});
+
+console.log(totalBlocks);
