@@ -40,10 +40,42 @@ for (let key in productionLookup) {
   }
 }
 
+let oreRequired = 0;
+
 function produceChemical(chemical: string, quantity: number) {
   const requiredIngrediends = productionLookup[chemical].ingredients;
 
-  console.log(requiredIngrediends, productionLookup[chemical].prodQuant);
+  let requiredProduction = quantity;
+
+  if (leftovers[chemical] > 0) {
+    if (leftovers[chemical] >= requiredProduction) {
+      leftovers[chemical] -= requiredProduction;
+      return;
+    } else {
+      requiredProduction -= leftovers[chemical];
+      leftovers[chemical] = 0;
+    }
+  }
+
+  const cyclesRequired = Math.ceil(
+    requiredProduction / productionLookup[chemical].prodQuant
+  );
+
+  const leftover =
+    cyclesRequired * productionLookup[chemical].prodQuant - requiredProduction;
+
+  leftovers[chemical] += leftover;
+
+  if (requiredIngrediends[0][1] === 'ORE') {
+    oreRequired +=
+      cyclesRequired * productionLookup[chemical].ingredients[0][0];
+  } else {
+    requiredIngrediends.forEach((ing) => {
+      produceChemical(ing[1], ing[0] * cyclesRequired);
+    });
+  }
 }
 
 produceChemical('FUEL', 1);
+
+console.log(oreRequired);
