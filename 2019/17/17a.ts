@@ -5,19 +5,6 @@ import { VM } from '../computer/VM';
 
 const inputArr = prepareInput(input);
 
-// const grid: string[][] = [];
-
-// for (let i = 0; i < 50; i++) {
-//   const row = new Array();
-//   row.length = 50;
-//   row.fill('.');
-//   grid.push(row);
-// }
-
-// grid.forEach((row) => {
-//   console.log(row.join(''));
-// });
-
 console.log(String.fromCharCode(10));
 
 const vm = new VM(inputArr);
