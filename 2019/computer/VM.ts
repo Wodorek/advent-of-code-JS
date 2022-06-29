@@ -128,4 +128,8 @@ export class VM {
   get getLastOutput() {
     return this.outputs[this.outputs.length - 1];
   }
+
+  get getCurrentMemory() {
+    return this.memory;
+  }
 }
