@@ -30,7 +30,13 @@ Object.keys(routineFunctions).forEach((key) => {
   const parsed: number[] = [];
 
   arr.forEach((el) => {
-    parsed.push(`${el}`.charCodeAt(0));
+    if (!isNaN(+el) && +el >= 10) {
+      parsed.push(`${el}`.charCodeAt(0));
+      parsed.push(`${el}`.charCodeAt(1));
+    } else {
+      parsed.push(`${el}`.charCodeAt(0));
+    }
+
     parsed.push(44);
   });
 
@@ -51,12 +57,14 @@ routine.forEach((el) => {
 
 parsedRoutine.pop();
 
-const inputs = [
+const inputs: number[] = [
   ...parsedRoutine,
+  10,
   ...parsedFunctions['A'],
   ...parsedFunctions['B'],
   ...parsedFunctions['C'],
-  ...['y'.charCodeAt(0)],
+  121,
+  10,
 ];
 
 let inputIdx = 0;
@@ -80,9 +88,9 @@ while (vm.working) {
   }
 }
 
-grid.forEach((line) => {
-  console.log(line.join(''));
-});
+console.log('out', vm.getLastOutput);
+
+//below was used to find the path taken, and the movement functions
 
 // const lookaroundMap: {
 //   [key: string]: { left: [number, number]; right: [number, number] };
