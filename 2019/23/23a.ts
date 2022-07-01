@@ -26,8 +26,6 @@ class Computer {
       input = this.queue[0];
     }
 
-    console.log(input);
-
     this.internals.executeInstruction(input);
 
     if (this.internals.lastCommand === 3) {
@@ -67,7 +65,8 @@ class Network {
         const [to, x, y] = packet;
 
         if (to === 255) {
-          console.log(`you are looking for${x}`);
+          console.log(`you are looking for ${y}`);
+          this.online = false;
         }
 
         this.computers[to].queue.push(x, y);
@@ -81,10 +80,3 @@ const network = new Network();
 while (network.online) {
   network.tick();
 }
-
-Object.keys(network.computers).forEach((co) => {
-  if (network.computers[co as any].queue.length > 0) {
-    console.log(co);
-    console.log(network.computers[co as any]);
-  }
-});
