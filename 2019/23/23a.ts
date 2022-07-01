@@ -67,6 +67,7 @@ class Network {
         if (to === 255) {
           console.log(`you are looking for ${y}`);
           this.online = false;
+          return;
         }
 
         this.computers[to].queue.push(x, y);
