@@ -12,12 +12,12 @@ const minX = getMin(inputArr, 'x');
 const minY = getMin(inputArr, 'y');
 const spring = 500 - minX;
 
-const reduceArraySize = (
+function reduceArraySize(
   arr: coordinate[],
   minX: number,
 
   minY: number
-) => {
+) {
   const mapped = arr.map((el) => {
     const mod1 = el[0] === 'x' ? minX : minY;
     const mod2 = mod1 === minX ? minY : minX;
@@ -26,29 +26,9 @@ const reduceArraySize = (
   });
 
   return mapped as coordinate[];
-};
+}
 
 const mapped = reduceArraySize(inputArr, minX, minY);
-
-const testArr = [
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '#', '.', '.', '.', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '#', '#', '#', '#', '#', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-  ['.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.'],
-];
 
 /**Mostly for visualization */
 const createMap = (coordinates: coordinate[]) => {
@@ -80,44 +60,6 @@ const createMap = (coordinates: coordinate[]) => {
 
 const map = createMap(mapped);
 
-function pourWater(map: string[][], x: number, y: number) {
-  const newMap = map.map((el) => el.map((nel) => nel));
-
-  newMap[y][x] = '+';
-
-  let mod = 1;
-  while (true) {
-    if (y + mod > newMap.length - 1) {
-      break;
-    }
-    if (newMap[y + mod][x] === '.') {
-      newMap[y + mod][x] = '_';
-    } else {
-      break;
-    }
-    mod++;
-  }
-
-  let wellBottom = y + mod - 1;
-
-  while (true) {
-    if (wellBottom <= y) {
-      break;
-    }
-
-    let left = x;
-    let right = x;
-
-    while (newMap[wellBottom][right + 1] !== '#') {}
-
-    wellBottom--;
-  }
-
-  newMap.forEach((line) => {
-    console.log(line.join(' '));
-  });
-}
-
-pourWater(testArr, 3, 0);
-console.log('');
-// pourWater(map, spring - 4, 0);
+map.forEach((row) => {
+  console.log(row.join(''));
+});
