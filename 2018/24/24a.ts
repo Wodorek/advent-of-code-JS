@@ -5,9 +5,6 @@ import { IUnit } from './helpers/types';
 
 const inputArr = prepareInput(input);
 
-inputArr.immune.forEach((el) => {
-  console.log(el.damageTypes);
-});
 class Unit {
   type: string;
   count: number;
@@ -20,8 +17,6 @@ class Unit {
     weak: string[];
   };
   target: Unit | null = null;
-  lastKilled: number = 0;
-  // totalPower: number;
 
   constructor(unitObj: IUnit) {
     this.count = unitObj.count;
@@ -31,8 +26,6 @@ class Unit {
     this.initiative = unitObj.initiative;
     this.damageTypes = unitObj.damageTypes;
     this.type = unitObj.type;
-
-    // this.totalPower = this.count * this.dmgAmount;
   }
 
   takeDamage(dmgType: string, amount: number) {
@@ -46,11 +39,6 @@ class Unit {
 
     const losses = Math.floor(dmg / this.hp);
 
-    if (losses > this.count) {
-      this.lastKilled = this.count;
-    } else {
-      this.lastKilled = losses;
-    }
     this.count -= losses;
   }
 
@@ -100,16 +88,20 @@ class Battlefield {
         pickingTarget.type === 'immune' ? immuneTargets : infectionTargets;
 
       //what if deals zero?
+      const possibleDmg = [];
       const sorted = targetPool.sort((a, b) => {
+        const dmgB = b.simulateDmgTaken(
+          pickingTarget.dmgType,
+          pickingTarget.dmgAmount * pickingTarget.count
+        );
+
+        const dmgA = a.simulateDmgTaken(
+          pickingTarget.dmgType,
+          pickingTarget.dmgAmount * pickingTarget.count
+        );
+
         return (
-          b.simulateDmgTaken(
-            pickingTarget.dmgType,
-            pickingTarget.dmgAmount * pickingTarget.count
-          ) -
-            a.simulateDmgTaken(
-              pickingTarget.dmgType,
-              pickingTarget.dmgAmount * pickingTarget.count
-            ) ||
+          dmgB - dmgA ||
           b.dmgAmount * b.count - a.dmgAmount * a.count ||
           b.initiative - a.initiative
         );
@@ -168,21 +160,16 @@ const units = {
 
 const battlefield = new Battlefield(units.immune, units.infection);
 
-battlefield.immune.forEach((el) => {
-  console.log(el);
-});
-
 while (battlefield.immune.length > 0 && battlefield.infection.length > 0) {
   battlefield.fight();
-  console.log(battlefield.immune.length, battlefield.infection.length);
 }
-
-battlefield.immune.forEach((el) => {
-  console.log(el);
-});
 
 let immuneCount = 0;
 let infectionCount = 0;
+
+console.log(
+  `${battlefield.immune.length > 0 ? 'immune system' : 'infection'} won!`
+);
 
 battlefield.immune.forEach((el) => {
   immuneCount += el.count;
