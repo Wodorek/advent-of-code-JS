@@ -88,26 +88,26 @@ class Battlefield {
         pickingTarget.type === 'immune' ? immuneTargets : infectionTargets;
 
       //what if deals zero?
-      const possibleDmg = [];
+      const possibleDmg: number[] = [];
       const sorted = targetPool.sort((a, b) => {
-        const dmgB = b.simulateDmgTaken(
-          pickingTarget.dmgType,
-          pickingTarget.dmgAmount * pickingTarget.count
-        );
-
-        const dmgA = a.simulateDmgTaken(
-          pickingTarget.dmgType,
-          pickingTarget.dmgAmount * pickingTarget.count
-        );
-
         return (
-          dmgB - dmgA ||
+          b.simulateDmgTaken(
+            pickingTarget.dmgType,
+            pickingTarget.dmgAmount * pickingTarget.count
+          ) -
+            a.simulateDmgTaken(
+              pickingTarget.dmgType,
+              pickingTarget.dmgAmount * pickingTarget.count
+            ) ||
           b.dmgAmount * b.count - a.dmgAmount * a.count ||
           b.initiative - a.initiative
         );
       });
 
       pickingTarget.target = sorted.shift()!;
+      if (possibleDmg.some((el) => el >= 0)) {
+      }
+
       if (pickingTarget.type === 'immune') {
         immuneTargets = sorted;
       } else {
