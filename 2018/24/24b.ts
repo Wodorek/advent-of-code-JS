@@ -107,7 +107,7 @@ class Battlefield {
         );
       });
 
-      //I should use lodash partition or something simmilar, but I am trying to avoid external packages where I can in those solutions
+      //I should use lodash partition or something similar, but I am trying to avoid external packages where I can in those solutions
 
       const pickFrom = targetPool.filter(
         (el) =>
