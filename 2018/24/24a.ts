@@ -88,7 +88,6 @@ class Battlefield {
         pickingTarget.type === 'immune' ? immuneTargets : infectionTargets;
 
       //what if deals zero?
-      const possibleDmg: number[] = [];
       const sorted = targetPool.sort((a, b) => {
         return (
           b.simulateDmgTaken(
@@ -105,8 +104,6 @@ class Battlefield {
       });
 
       pickingTarget.target = sorted.shift()!;
-      if (possibleDmg.some((el) => el >= 0)) {
-      }
 
       if (pickingTarget.type === 'immune') {
         immuneTargets = sorted;
