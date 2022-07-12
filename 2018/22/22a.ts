@@ -6,9 +6,6 @@ const inputArr = prepareInput(input);
 
 console.log(inputArr);
 
-// const depth = 510;
-// const targetX = 10;
-// const targetY = 10;
 const [depth, targetX, targetY] = inputArr;
 const xTimes = 16807;
 const yTimes = 48271;
