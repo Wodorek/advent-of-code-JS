@@ -42,8 +42,6 @@ calculateErosion(targetX, targetY - 1);
 
 let total = 0;
 
-console.log(mem);
-
 Object.values(mem).forEach((el) => {
   total += el % 3;
 });
