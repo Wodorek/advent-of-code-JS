@@ -2,173 +2,34 @@ import input from './input';
 
 import prepareInput from './helpers/prepareInput';
 
-const [bindTo, instructions] = prepareInput(input);
+const ops = {
+  addr: (r: number[], a: number, b: number) => r[a] + r[b],
+  addi: (r: number[], a: number, b: number) => r[a] + b,
+  mulr: (r: number[], a: number, b: number) => r[a] * r[b],
+  muli: (r: number[], a: number, b: number) => r[a] * b,
+  banr: (r: number[], a: number, b: number) => r[a] & r[b],
+  bani: (r: number[], a: number, b: number) => r[a] & b,
+  borr: (r: number[], a: number, b: number) => r[a] | r[b],
+  bori: (r: number[], a: number, b: number) => r[a] | b,
+  setr: (r: number[], a: number) => r[a],
+  seti: (r: number[], a: number) => a,
+  gtir: (r: number[], a: number, b: number) => (a > r[b] ? 1 : 0),
+  gtri: (r: number[], a: number, b: number) => (r[a] > b ? 1 : 0),
+  gtrr: (r: number[], a: number, b: number) => (r[a] > r[b] ? 1 : 0),
+  eqir: (r: number[], a: number, b: number) => (a === r[b] ? 1 : 0),
+  eqri: (r: number[], a: number, b: number) => (r[a] === b ? 1 : 0),
+  eqrr: (r: number[], a: number, b: number) => (r[a] === r[b] ? 1 : 0),
+};
 
-class OpcodeDevice {
-  registers: number[];
-  working: boolean;
-  pointerValue: number;
-  pointerBoundTo: number;
+const [bound, program] = prepareInput(input);
+const register = [0, 0, 0, 0, 0, 0];
 
-  constructor(initialRegisters: number[], pointer: number) {
-    this.registers = initialRegisters;
-    this.working = true;
-    this.pointerBoundTo = pointer;
-    this.pointerValue = this.registers[pointer];
+while (register[bound] >= 0 && register[bound] < program.length) {
+  const [op, a, b, c] = program[register[bound]];
+  if (op === 'eqrr' && b === 0) {
+    console.log(register[a]);
+    break;
   }
-
-  bindPointer(to: number) {
-    this.pointerValue = this.registers[to];
-  }
-
-  ops = {
-    addr: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] + this.registers[B];
-
-      return modifiedRegisters;
-    },
-    addi: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] + B;
-
-      return modifiedRegisters;
-    },
-    mulr: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] * this.registers[B];
-
-      return modifiedRegisters;
-    },
-    muli: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] * B;
-
-      return modifiedRegisters;
-    },
-    banr: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] & this.registers[B];
-
-      return modifiedRegisters;
-    },
-    bani: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] & B;
-
-      return modifiedRegisters;
-    },
-    boor: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] | this.registers[B];
-
-      return modifiedRegisters;
-    },
-    bori: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] | B;
-
-      return modifiedRegisters;
-    },
-    setr: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A];
-
-      return modifiedRegisters;
-    },
-    seti: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = A;
-
-      return modifiedRegisters;
-    },
-    gtir: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = A > this.registers[B] ? 1 : 0;
-
-      return modifiedRegisters;
-    },
-    gtri: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] > B ? 1 : 0;
-
-      return modifiedRegisters;
-    },
-    gtrr: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] > this.registers[B] ? 1 : 0;
-
-      return modifiedRegisters;
-    },
-    eqir: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = A === this.registers[B] ? 1 : 0;
-
-      return modifiedRegisters;
-    },
-    eqri: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] === B ? 1 : 0;
-
-      return modifiedRegisters;
-    },
-    eqrr: (A: number, B: number, C: number) => {
-      const modifiedRegisters = [...this.registers];
-
-      modifiedRegisters[C] = this.registers[A] === this.registers[B] ? 1 : 0;
-
-      return modifiedRegisters;
-    },
-  };
-
-  executeInstruction(operation: string, A: number, B: number, C: number) {
-    if (this.pointerValue) {
-      this.registers[this.pointerBoundTo] = this.pointerValue;
-    }
-
-    const modifiedRegisters = this.ops[operation as keyof typeof this.ops](
-      A,
-      B,
-      C
-    );
-    this.registers = modifiedRegisters;
-    this.pointerValue = this.registers[this.pointerBoundTo];
-    this.pointerValue++;
-
-    return this.pointerValue;
-  }
+  register[c] = ops[op as keyof typeof ops](register, a, b);
+  register[bound]++;
 }
-
-const halted: number[] = [];
-
-for (let i = 0; i < 600000; i++) {
-  const device = new OpcodeDevice([i, 0, 0, 0, 0, 0], bindTo);
-
-  let currentInst = device.registers[bindTo];
-  for (let j = 0; j < 1000; j++) {
-    currentInst = device.executeInstruction(...instructions[currentInst]);
-
-    if (currentInst > instructions.length - 1 || currentInst < 0) {
-      console.log(i);
-      halted.push(i);
-      break;
-    }
-  }
-}
-
-console.log(halted);
