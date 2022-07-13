@@ -99,7 +99,6 @@ function calculateManhattan(pos: [number, number, number]) {
 }
 
 function divideRanges(initialRange: IRange): IRange[] {
-  // a check, to find those pesky one of ranges
   const midX = Math.floor((initialRange.x.min + initialRange.x.max) / 2);
 
   const midY = Math.floor((initialRange.y.min + initialRange.y.max) / 2);
@@ -144,22 +143,26 @@ function divideRanges(initialRange: IRange): IRange[] {
     });
   });
 
-  return ranges;
+  return ranges.filter((el) => {
+    return el.x.max >= el.x.min && el.y.max >= el.y.min && el.z.max >= el.z.min;
+  });
 }
 
-// get all ranges that match, and check all of them?
-function selectBestRanges(ranges: IRange[], scanners: number[][]) {
-  let currentMax = -Infinity;
+const bestRange = 978;
 
+function selectBestRanges(ranges: IRange[], scanners: number[][]) {
   let bestRanges: IRange[] = [];
+
+  let max = -1;
 
   ranges.forEach((range) => {
     const foundScanners = countScanners(range, scanners);
 
-    if (foundScanners > currentMax) {
-      bestRanges = [range];
-      currentMax = foundScanners;
-    } else if (foundScanners === currentMax) {
+    if (foundScanners > max) {
+      max = foundScanners;
+    }
+
+    if (foundScanners >= bestRange) {
       bestRanges.push(range);
     }
   });
@@ -169,8 +172,6 @@ function selectBestRanges(ranges: IRange[], scanners: number[][]) {
 
 function findTheSpot(scanners: number[][]) {
   let ranges = [findBoundaries(scanners)];
-
-  const checked: string[] = [];
 
   const outputs = [];
 
@@ -182,25 +183,25 @@ function findTheSpot(scanners: number[][]) {
       currentRange.y.min === currentRange.y.max &&
       currentRange.z.min === currentRange.z.max
     ) {
-      outputs.push({
-        range: currentRange,
-        bots: countScanners(currentRange, scanners),
-      });
+      outputs.push(currentRange);
     } else {
       const divided = divideRanges(currentRange);
 
       const best = selectBestRanges(divided, scanners);
 
-      console.log('best', best);
-      ranges.push(...best);
+      ranges.unshift(...best);
     }
   }
 
   return outputs;
 }
 
-console.log(findTheSpot(inputArr));
+const foundPoints = findTheSpot(inputArr);
 
-// const theSpot = findTheSpot(inputArr);
-
-// //138697281
+console.log(
+  Math.min(
+    ...foundPoints.map((point) =>
+      calculateManhattan([point.x.min, point.y.min, point.z.min])
+    )
+  )
+);
