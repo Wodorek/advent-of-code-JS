@@ -99,6 +99,7 @@ function calculateManhattan(pos: [number, number, number]) {
 }
 
 function divideRanges(initialRange: IRange): IRange[] {
+  // a check, to find those pesky one of ranges
   const midX = Math.floor((initialRange.x.min + initialRange.x.max) / 2);
 
   const midY = Math.floor((initialRange.y.min + initialRange.y.max) / 2);
