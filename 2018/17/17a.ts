@@ -60,6 +60,61 @@ const createMap = (coordinates: coordinate[]) => {
 
 const map = createMap(mapped);
 
+function pourWater(x: number, y: number) {
+  map[y][x] = 'x';
+
+  let currentBottom = y;
+
+  while (
+    map[currentBottom][x] !== '#' &&
+    map[currentBottom][x] !== '~' &&
+    currentBottom < map.length - 1
+  ) {
+    currentBottom++;
+  }
+
+  currentBottom--;
+
+  const spillQueue: number[] = [];
+
+  while (currentBottom !== y) {
+    map[currentBottom][x] = '|';
+    spillQueue.push(currentBottom);
+    currentBottom--;
+  }
+
+  while (spillQueue.length > 0) {
+    const currentLevel = spillQueue.shift()!;
+
+    let left = x - 1;
+    let right = x + 1;
+
+    while (
+      map[currentLevel][left] !== '#' &&
+      map[currentLevel + 1][left] !== '.'
+    ) {
+      map[currentLevel][left] = '~';
+      left--;
+      if (left === -1) {
+        break;
+      }
+    }
+
+    while (
+      map[currentLevel][right] !== '#' &&
+      map[currentLevel + 1][right] !== '.'
+    ) {
+      map[currentLevel][right] = '~';
+      right++;
+      if (right >= map[0].length) {
+        break;
+      }
+    }
+  }
+}
+
+pourWater(spring + 5, 0);
+
 map.forEach((row) => {
-  console.log(row.join(''));
+  console.log(row.join(' '));
 });
