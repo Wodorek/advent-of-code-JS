@@ -59,9 +59,3 @@
 // };
 
 // const map = createMap(mapped);
-
-const aa = 1;
-const bb = 0;
-const cc = 3;
-
-console.log(aa && bb && cc);
