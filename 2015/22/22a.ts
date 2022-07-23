@@ -182,13 +182,19 @@ const testArr = [1, 2, 3, 4, 5];
 
 // const combinations = getCombinations(testArr, 8);
 
+//done by hand,
+//this is basically finding a mmo-like dps rotation lol
 const spells = [
+  'poison',
+  'recharge',
+  'shield',
   'poison',
   'missle',
   'missle',
-  'recharge',
   'missle',
-  'shield',
+  'missle',
+  'missle',
+  'missle',
   'missle',
 ];
 
@@ -196,4 +202,4 @@ const battle = new Battle(bossHp, bossAttack);
 
 battle.playGame(spells);
 
-console.log(battle);
+console.log(battle.totalManaSpent);
