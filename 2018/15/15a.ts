@@ -128,6 +128,7 @@ class Battlefield {
   elves: Monster[] = [];
   isBattleInProgress: boolean = false;
   topography: ITopography = {};
+  battleInProgress: boolean = true;
 
   constructor(map: string[][]) {
     map.forEach((row, y) => {
@@ -159,7 +160,7 @@ class Battlefield {
       const activeMonster = monsterQueue.shift()!;
 
       if (activeMonster.isDead) {
-        return;
+        continue;
       }
 
       const enemies = activeMonster.type === 'Elf' ? this.goblins : this.elves;
@@ -201,13 +202,15 @@ class Battlefield {
 
       if (enemiesInRange.length > 0) {
         //sorry
-        enemiesInRange = enemiesInRange.sort((a, b) => {
-          return a.hp === b.hp
-            ? a.position.y === b.position.y
-              ? a.position.x - b.position.x
-              : a.position.y - b.position.y
-            : a.hp - b.hp;
-        });
+        enemiesInRange = enemiesInRange
+          .sort((a, b) => {
+            return a.hp === b.hp
+              ? a.position.y === b.position.y
+                ? a.position.x - b.position.x
+                : a.position.y - b.position.y
+              : a.hp - b.hp;
+          })
+          .filter((el) => !el.isDead);
 
         enemiesInRange[0].takeDamage(this.topography, activeMonster.attack);
       }
@@ -215,6 +218,10 @@ class Battlefield {
 
     this.goblins = this.goblins.filter((el) => !el.isDead);
     this.elves = this.elves.filter((el) => !el.isDead);
+
+    if (this.goblins.length === 0 || this.elves.length === 0) {
+      this.battleInProgress = false;
+    }
   }
 }
 
@@ -222,14 +229,20 @@ const battlefield = new Battlefield(inputArr);
 
 let rounds = 0;
 
-// while (battlefield.goblins.length > 0) {
-//   battlefield.playTurn();
-//   rounds++;
-// }
-
-for (let i = 0; i > 37; i++) {
+while (battlefield.battleInProgress) {
+  rounds++;
   battlefield.playTurn();
 }
+
+let hpSum = 0;
+
+const winners =
+  battlefield.elves.length > 0 ? battlefield.elves : battlefield.goblins;
+
+winners.forEach((winner) => {
+  hpSum += winner.hp;
+});
+
 const newMap: string[][] = [];
 
 for (let i = 0; i < inputArr.length; i++) {
@@ -248,17 +261,13 @@ Object.keys(battlefield.topography).forEach((point) => {
   newMap[split[1]][split[0]] = char[0];
 });
 
+console.log(battlefield.goblins);
+
 newMap.forEach((el) => {
   console.log(el.join(''));
 });
+console.log('');
 
-let hpSum = 0;
+console.log(rounds);
 
-const winners =
-  battlefield.elves.length > 0 ? battlefield.elves : battlefield.goblins;
-
-winners.forEach((winner) => {
-  hpSum += winner.hp;
-});
-
-console.log(hpSum * rounds);
+console.log(hpSum * (rounds - 1));
