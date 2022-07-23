@@ -70,8 +70,8 @@ class Monster {
 
     //hate do do it
     while (true) {
-      let newPaths: any[] = [];
-      let targetPaths: any[] = [];
+      let newPaths: { x: number; y: number }[][] = [];
+      let targetPaths: { x: number; y: number }[][] = [];
 
       pathsTaken.forEach((path) => {
         const adjacents = this.spacesAround(
