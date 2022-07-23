@@ -8,9 +8,7 @@ interface ITopography {
   [key: string]: string;
 }
 
-inputArr.forEach((el) => {
-  console.log(el.join(''));
-});
+//full disclosure, this is the last puzzle that I am doing, and by the looks of it, there will be like 100 lines of useless, repetitive code, but this puzzle is no fun, so maybe I'll get back to it in like 2027 to refactor it, no sooner.
 
 class Monster {
   position: { x: number; y: number };
@@ -18,6 +16,7 @@ class Monster {
   attack: number = 3;
   type: 'Elf' | 'Goblin';
   enemy: 'Elf' | 'Goblin';
+  isDead: boolean = false;
 
   constructor(x: number, y: number, type: 'G' | 'E') {
     this.position = { x, y };
@@ -25,29 +24,46 @@ class Monster {
     this.enemy = type === 'G' ? 'Elf' : 'Goblin';
   }
 
-  move(vector: [number, number]) {
-    this.position.x += vector[0];
-    this.position.y += vector[1];
+  move(topography: ITopography, enemies: Monster[]) {
+    const newPosition = this.findNextStep(topography, enemies);
+
+    if (newPosition) {
+      topography[`${this.position.x},${this.position.y}`] = '.';
+      topography[`${newPosition.x},${newPosition.y}`] = this.type;
+      this.position = newPosition;
+    }
+  }
+
+  spacesAround(x: number = this.position.x, y: number = this.position.y) {
+    const steps = [
+      [0, -1],
+      [-1, 0],
+      [1, 0],
+      [0, 1],
+    ];
+
+    const adjacents = steps.map((step) => {
+      return {
+        x: x + step[0],
+        y: y + step[1],
+      };
+    });
+
+    return adjacents;
   }
 
   // possibly the worst piece of code I have ever produced.
-  findNextStep(topography: ITopography, enemies: Monster[]) {
+  findNextStep(
+    topography: ITopography,
+    enemies: Monster[]
+  ): { x: number; y: number } | null {
     const visited: string[] = [`${this.position.x}, ${this.position.y}`];
 
     const enemyPositions = enemies.map((enemy) => {
       return `${enemy.position.x},${enemy.position.y}`;
     });
 
-    console.log('enemies', enemyPositions);
-
     let pathsTaken = [[{ x: this.position.x, y: this.position.y }]];
-
-    const steps = [
-      [0, -1], //up
-      [1, 0], //right
-      [0, 1], //down
-      [-1, 0], //left
-    ];
 
     //hate do do it
     while (true) {
@@ -55,12 +71,10 @@ class Monster {
       let targetPaths: any[] = [];
 
       pathsTaken.forEach((path) => {
-        let adjacents = steps.map((step) => {
-          return {
-            x: path[path.length - 1].x + step[0],
-            y: path[path.length - 1].y + step[1],
-          };
-        });
+        const adjacents = this.spacesAround(
+          path[path.length - 1].x,
+          path[path.length - 1].y
+        );
 
         adjacents.forEach((adjacent) => {
           const id = `${adjacent.x},${adjacent.y}`;
@@ -85,17 +99,26 @@ class Monster {
         });
       });
       if (targetPaths.length > 0) {
-        targetPaths = targetPaths.sort((p1, p2) =>
-          p1[p1.length - 1].y === p2[p2.length - 1].y
-            ? p1[p1.length - 1].x - p2[p2.length - 1].x
-            : p1[p1.length - 1].y - p2[p2.length - 1].y
+        targetPaths = targetPaths.sort((a, b) =>
+          a[a.length - 1].y === b[b.length - 1].y
+            ? a[a.length - 1].x - b[b.length - 1].x
+            : a[a.length - 1].y - b[b.length - 1].y
         );
+
         return targetPaths[0][1];
       }
 
       pathsTaken = newPaths;
 
       if (pathsTaken.length < 1) return null;
+    }
+  }
+
+  takeDamage(topography: ITopography, dmg: number = 3) {
+    this.hp -= dmg;
+    if (this.hp <= 0) {
+      this.isDead = true;
+      topography[`${this.position.x},${this.position.y}`] = '.';
     }
   }
 }
@@ -112,8 +135,10 @@ class Battlefield {
         if (char === 'E' || char === 'G') {
           const monster = new Monster(x, y, char);
           if (monster.type === 'Elf') {
+            char = 'Elf';
             this.elves.push(monster);
           } else {
+            char = 'Goblin';
             this.goblins.push(monster);
           }
         }
@@ -122,11 +147,118 @@ class Battlefield {
       });
     });
   }
+
+  playTurn() {
+    const monsterQueue = [...this.goblins, ...this.elves].sort((a, b) => {
+      return a.position.y === b.position.y
+        ? a.position.x - b.position.x
+        : a.position.y - b.position.y;
+    });
+
+    while (monsterQueue.length > 0) {
+      const activeMonster = monsterQueue.shift()!;
+
+      if (activeMonster.isDead) {
+        return;
+      }
+
+      const enemies = activeMonster.type === 'Elf' ? this.goblins : this.elves;
+
+      const spacesAround = activeMonster.spacesAround();
+
+      //don't move if next to enemy
+      let shouldMove = true;
+      spacesAround.forEach((space) => {
+        if (this.topography[`${space.x},${space.y}`] === activeMonster.enemy)
+          shouldMove = false;
+      });
+
+      if (shouldMove) {
+        activeMonster.move(this.topography, enemies);
+      }
+
+      const aroundAfterMove = activeMonster.spacesAround();
+
+      let enemiesInRange: Monster[] = [];
+
+      for (let i = 0; i < aroundAfterMove.length; i++) {
+        const space = aroundAfterMove[i];
+
+        // I don't know why am I dying on this topography hill
+        if (this.topography[`${space.x},${space.y}`] === activeMonster.enemy) {
+          enemiesInRange.push(
+            enemies[
+              enemies.findIndex((monster) => {
+                return (
+                  monster.position.x === space.x &&
+                  monster.position.y === space.y
+                );
+              })
+            ]
+          );
+        }
+      }
+
+      if (enemiesInRange.length > 0) {
+        //sorry
+        enemiesInRange = enemiesInRange.sort((a, b) => {
+          return a.hp === b.hp
+            ? a.position.y === b.position.y
+              ? a.position.x - b.position.x
+              : a.position.y - b.position.y
+            : a.hp - b.hp;
+        });
+
+        enemiesInRange[0].takeDamage(this.topography, activeMonster.attack);
+      }
+    }
+
+    this.goblins = this.goblins.filter((el) => !el.isDead);
+    this.elves = this.elves.filter((el) => !el.isDead);
+  }
 }
 
 const battlefield = new Battlefield(inputArr);
-const goblin = battlefield.goblins[0];
 
-console.log(goblin);
+let rounds = 0;
 
-console.log(goblin.findNextStep(battlefield.topography, battlefield.elves));
+// while (battlefield.goblins.length > 0) {
+//   battlefield.playTurn();
+//   rounds++;
+// }
+
+for (let i = 0; i > 37; i++) {
+  battlefield.playTurn();
+}
+const newMap: string[][] = [];
+
+for (let i = 0; i < inputArr.length; i++) {
+  const row: string[] = [];
+  row.length = inputArr[0].length;
+  row.fill('.');
+
+  newMap.push(row);
+}
+
+Object.keys(battlefield.topography).forEach((point) => {
+  const split = point.split(',').map(Number);
+
+  let char = battlefield.topography[point];
+
+  newMap[split[1]][split[0]] = char[0];
+});
+
+newMap.forEach((el) => {
+  console.log(el.join(''));
+});
+
+let hpSum = 0;
+
+const winners =
+  battlefield.elves.length > 0 ? battlefield.elves : battlefield.goblins;
+
+winners.forEach((winner) => {
+  hpSum += winner.hp;
+});
+
+console.log(hpSum * rounds);
