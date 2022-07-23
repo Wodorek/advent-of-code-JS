@@ -25,7 +25,10 @@ class Monster {
   }
 
   move(topography: ITopography, enemies: Monster[]) {
-    const newPosition = this.findNextStep(topography, enemies);
+    const newPosition = this.findNextStep(
+      topography,
+      enemies.filter((el) => !el.isDead)
+    );
 
     if (newPosition) {
       topography[`${this.position.x},${this.position.y}`] = '.';
@@ -242,32 +245,5 @@ const winners =
 winners.forEach((winner) => {
   hpSum += winner.hp;
 });
-
-const newMap: string[][] = [];
-
-for (let i = 0; i < inputArr.length; i++) {
-  const row: string[] = [];
-  row.length = inputArr[0].length;
-  row.fill('.');
-
-  newMap.push(row);
-}
-
-Object.keys(battlefield.topography).forEach((point) => {
-  const split = point.split(',').map(Number);
-
-  let char = battlefield.topography[point];
-
-  newMap[split[1]][split[0]] = char[0];
-});
-
-console.log(battlefield.goblins);
-
-newMap.forEach((el) => {
-  console.log(el.join(''));
-});
-console.log('');
-
-console.log(rounds);
 
 console.log(hpSum * (rounds - 1));
