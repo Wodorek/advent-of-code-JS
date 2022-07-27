@@ -1,7 +1,6 @@
 import input from './input';
 
 import prepareInput from './helpers/prepareInput';
-import getCombinations from './helpers/getCombinations';
 
 const [bossHp, bossAttack] = prepareInput(input);
 
@@ -9,6 +8,17 @@ interface ISpell {
   effect: 'poison' | 'shield' | 'recharge' | 'heal' | null;
   dmg: number;
   cost: number;
+}
+
+interface IGameState {
+  wizardHp: number;
+  bossHp: number;
+  bossAttack: number;
+  mana: number;
+  poisonTimer: number;
+  shieldTimer: number;
+  rechargeTimer: number;
+  totalManaSpent: number;
 }
 
 const allSpells: { [key: string]: ISpell } = {
@@ -39,167 +49,124 @@ const allSpells: { [key: string]: ISpell } = {
   },
 };
 
-class Battle {
-  isWizardDead = false;
-  isBossDead = false;
-  wizardHp: number = 50;
-  bossHp: number;
-  bossAttack: number;
-  mana: number = 500;
-  isShielded: boolean = false;
-  isRecharging: boolean = false;
-  isPoisoned: boolean = false;
-  effectsTimers = {
-    shield: 0,
-    recharge: 0,
-    poison: 0,
-  };
-  totalManaSpent: number = 0;
+const initialState: IGameState = {
+  wizardHp: 50,
+  bossHp,
+  bossAttack,
+  mana: 500,
+  poisonTimer: 0,
+  shieldTimer: 0,
+  rechargeTimer: 0,
+  totalManaSpent: 0,
+};
 
-  constructor(bossHp: number, bossAttack: number) {
-    this.bossHp = bossHp;
-    this.bossAttack = bossAttack;
-  }
+const manaValues: number[] = [];
 
-  wizardTakeDamage() {
-    const armor = this.isShielded ? 7 : 0;
-    this.wizardHp -= this.bossAttack - armor;
-    if (this.wizardHp <= 0) {
-      this.isWizardDead = true;
-    }
-  }
+function playRound(gameState: IGameState, spell: string) {
+  const newState = { ...gameState };
 
-  bossTakeDamage(dmg: number) {
-    this.bossHp -= dmg;
+  //Wizard "turn"
+  // tick the timers
+  if (newState.poisonTimer > 0) {
+    newState.bossHp -= 3;
 
-    if (this.bossHp <= 0) {
-      this.isBossDead = true;
-    }
-  }
+    if (newState.bossHp <= 0) {
+      manaValues.push(newState.totalManaSpent);
 
-  tickDownTimers() {
-    this.effectsTimers.shield--;
-    this.effectsTimers.recharge--;
-    this.effectsTimers.poison--;
-
-    if (this.effectsTimers.shield <= 0) {
-      this.isShielded = false;
-    }
-
-    if (this.effectsTimers.recharge <= 0) {
-      this.isRecharging = false;
-    }
-
-    if (this.effectsTimers.poison <= 0) {
-      this.isPoisoned = false;
-    }
-  }
-
-  wizardSpellCast(spell: ISpell) {
-    if (spell.cost > this.mana) {
       return;
     }
-
-    if (spell.effect === 'heal') {
-      this.wizardHp += 2;
-    } else if (spell.effect === 'recharge') {
-      this.isRecharging = true;
-      this.effectsTimers.recharge = 5;
-    } else if (spell.effect === 'shield') {
-      this.isShielded = true;
-      this.effectsTimers.shield = 6;
-    } else if (spell.effect === 'poison') {
-      this.isPoisoned = true;
-      this.effectsTimers.poison = 6;
-    }
-
-    this.bossTakeDamage(spell.dmg);
-    this.mana -= spell.cost;
-    this.totalManaSpent += spell.cost;
+    newState.poisonTimer--;
   }
 
-  playWizardTurn(spell: ISpell) {
-    if (this.isPoisoned) {
-      this.bossHp -= 3;
-      if (this.bossHp <= 0) {
-        this.isBossDead = true;
-      }
-    }
+  if (newState.rechargeTimer > 0) {
+    newState.mana += 101;
+    newState.rechargeTimer--;
+  }
 
-    if (this.isRecharging) {
-      this.mana += 101;
-    }
+  newState.shieldTimer--;
 
-    if (this.isBossDead || this.isWizardDead) {
+  const cast = allSpells[spell];
+
+  //resolve effects
+  if (cast.effect === 'heal') {
+    newState.wizardHp += 2;
+  }
+  if (cast.effect === 'shield') {
+    newState.shieldTimer = 6;
+  }
+  if (cast.effect === 'poison') {
+    newState.poisonTimer = 6;
+  }
+  if (cast.effect === 'recharge') {
+    newState.rechargeTimer = 5;
+  }
+
+  newState.bossHp -= cast.dmg;
+  newState.mana -= cast.cost;
+  newState.totalManaSpent += cast.cost;
+
+  if (newState.bossHp <= 0) {
+    manaValues.push(newState.totalManaSpent);
+
+    return;
+  }
+
+  //boss "turn"
+
+  // tick the timers
+  if (newState.poisonTimer > 0) {
+    newState.bossHp -= 3;
+
+    if (newState.bossHp <= 0) {
+      manaValues.push(newState.totalManaSpent);
+
       return;
     }
-
-    this.tickDownTimers();
-    this.wizardSpellCast(spell);
+    newState.poisonTimer--;
   }
 
-  playBossTurn() {
-    if (this.isPoisoned) {
-      this.bossHp -= 3;
-      if (this.bossHp <= 0) {
-        this.isBossDead = true;
-      }
-    }
-
-    if (this.isRecharging) {
-      this.mana += 101;
-    }
-
-    if (this.isBossDead || this.isWizardDead) {
-      return;
-    }
-
-    this.tickDownTimers();
-    this.wizardTakeDamage();
+  if (newState.rechargeTimer > 0) {
+    newState.mana += 101;
+    newState.rechargeTimer--;
   }
 
-  playGame(spells: (keyof typeof allSpells)[]) {
-    let currIdx = 0;
+  newState.shieldTimer--;
 
-    while (!this.isBossDead && !this.isWizardDead) {
-      this.playWizardTurn(allSpells[spells[currIdx]]);
-      this.playBossTurn();
-      currIdx++;
-      if (currIdx > spells.length - 1) {
-        currIdx = 0;
-      }
+  const dmgToTake = (newState.shieldTimer > 0 ? -7 : 0) + newState.bossAttack;
+
+  newState.wizardHp -= dmgToTake;
+
+  if (newState.wizardHp <= 0) {
+    return;
+  }
+
+  const possibleSpells = Object.keys(allSpells).filter((spell) => {
+    let canCast = true;
+
+    if (allSpells[spell].cost > newState.mana) {
+      canCast = false;
     }
 
-    if (this.isBossDead) {
-      return true;
-    } else {
-      return false;
+    if (spell === 'recharge' && newState.rechargeTimer > 0) {
+      canCast = false;
     }
+
+    if (spell === 'poison' && newState.poisonTimer > 0) {
+      canCast = false;
+    }
+
+    if (spell === 'shield' && newState.shieldTimer > 0) {
+      canCast = false;
+    }
+
+    return canCast;
+  });
+
+  for (let i = 0; i < possibleSpells.length; i++) {
+    playRound(newState, possibleSpells[i]);
   }
 }
 
-const testArr = [1, 2, 3, 4, 5];
+playRound(initialState, 'poison');
 
-// const combinations = getCombinations(testArr, 8);
-
-//done by hand,
-//this is basically finding a mmo-like dps rotation lol
-const spells = [
-  'poison',
-  'recharge',
-  'shield',
-  'poison',
-  'missle',
-  'missle',
-  'missle',
-  'missle',
-  'missle',
-  'missle',
-  'missle',
-];
-
-const battle = new Battle(bossHp, bossAttack);
-
-battle.playGame(spells);
-
-console.log(battle.totalManaSpent);
+console.log(Math.min(...manaValues));
