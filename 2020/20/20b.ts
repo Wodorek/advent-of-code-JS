@@ -345,7 +345,7 @@ function mergeBorders(tiles: string[][][][], puzzleSize: number) {
   }
 
   tiles.forEach((tileRow, rowIdx) => {
-    tileRow.forEach((tileCol, tileIdx) => {
+    tileRow.forEach((tileCol) => {
       tileCol.forEach((tileLine, lineIdx) => {
         finalImage[rowIdx * 8 + lineIdx].push(...tileLine);
       });
