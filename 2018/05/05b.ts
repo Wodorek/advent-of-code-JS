@@ -4,7 +4,7 @@ let inputArr = input.trim().split('');
 
 let pastValue = 0;
 
-//reuse part 1, those element would be removed anyway
+//reuse part 1, those elements would be removed anyway
 while (true) {
   for (let i = 0; i < inputArr.length - 1; i++) {
     if (
