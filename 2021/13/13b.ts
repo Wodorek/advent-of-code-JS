@@ -1,5 +1,4 @@
 import draw from './draw';
-import isUnique from './helpers/isUnique';
 import prepareInput from './helpers/prepareInput';
 import input from './input';
 
