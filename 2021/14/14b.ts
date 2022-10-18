@@ -1,4 +1,3 @@
-import pointsA from '../10/pointsA';
 import prepareInput from './helpers/prepareInput';
 import input from './input';
 
