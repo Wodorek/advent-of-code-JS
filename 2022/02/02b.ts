@@ -16,9 +16,6 @@ const gameRules = {
   C: { X: shapeValues.B, Y: shapeValues.C, Z: shapeValues.A },
 };
 
-// R P S
-// A B C
-
 const outcomeValues = {
   X: 0,
   Y: 3,
