@@ -1,3 +1,9 @@
-function prepareInput(input:string) {};
+function prepareInput(input: string) {
+  return input.split('\n').map((line) => {
+    const split = line.split(',');
 
-export default prepareInput
+    return [split[0].split('-').map(Number), split[1].split('-').map(Number)];
+  });
+}
+
+export default prepareInput;
