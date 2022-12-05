@@ -24,11 +24,7 @@ function populateStacks(initial: string[][]) {
   initial.forEach((line) => {
     line.forEach((char, idx) => {
       if (char !== ' ') {
-        if (idx === 1) {
-          stacks[1].push(char);
-        } else {
-          stacks[(idx - 1) / 4 + 1].push(char);
-        }
+        stacks[(idx - 1) / 4 + 1].push(char);
       }
     });
   });
