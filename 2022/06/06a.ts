@@ -4,14 +4,16 @@ import prepareInput from './helpers/prepareInput';
 
 const inputStr = prepareInput(input);
 
+const windowSize = 4;
+
 function findMarker(buffer: string) {
   let currIdx = 0;
 
   while (currIdx < buffer.length) {
-    const slice = new Set(buffer.slice(currIdx, currIdx + 4));
+    const slice = new Set(buffer.slice(currIdx, currIdx + windowSize));
 
-    if (slice.size === 4) {
-      return currIdx + 4;
+    if (slice.size === windowSize) {
+      return currIdx + windowSize;
     }
     currIdx++;
   }
