@@ -1,3 +1,5 @@
-function prepareInput(input:string) {};
+function prepareInput(input: string) {
+  return input.split('\n').map((line) => line.split('').map(Number));
+}
 
-export default prepareInput
+export default prepareInput;
