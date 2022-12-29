@@ -89,13 +89,11 @@ class Rope {
     const dir = leaderMoves.dir as keyof typeof moves;
 
     for (let i = 0; i < steps; i++) {
-      leader.x += moves[dir].x;
-      leader.y += moves[dir].y;
+      this.move(leader, dir);
 
       const nextMove = this.findNextMove(leader, follower);
 
-      follower.x += moves[nextMove].x;
-      follower.y += moves[nextMove].y;
+      this.move(follower, nextMove);
 
       this.tailPositions.add(`${this.tail.x},${this.tail.y}`);
     }
