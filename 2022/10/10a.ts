@@ -20,7 +20,6 @@ class Computer {
   checkSignal() {
     if (this.currentCycle === 20 || (this.currentCycle + 20) % 40 === 0) {
       this.signals.push(this.currentCycle * this.register);
-      // console.log(`cycle is ${this.currentCycle} and reg is ${this.register}`);
     }
   }
 
