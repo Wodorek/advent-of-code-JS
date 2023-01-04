@@ -3,6 +3,7 @@ export interface IMonkey {
   items: number[];
   operation: (old: number) => number;
   test: (num: number) => number;
+  testNum: number;
   inspections: number;
 }
 
@@ -28,8 +29,6 @@ function prepareInput(input: string) {
   return split.map((el) => {
     const operationVars = el[2].split(' ').reverse();
 
-    console.log(operationVars);
-
     const monkey: IMonkey = {
       id: +el[0].split(' ')[1].replace(':', ''),
       items: eval(`[${el[1].replace('Starting items: ', '')}]`),
@@ -40,6 +39,7 @@ function prepareInput(input: string) {
           return +el[5].split(' ').reverse()[0];
         }
       },
+      testNum: +el[3].split(' ').reverse()[0],
       operation: factory(operationVars[0], operationVars[1]),
       inspections: 0,
     };
