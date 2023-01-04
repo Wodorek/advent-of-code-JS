@@ -1,8 +1,9 @@
 export interface IMonkey {
   id: number;
-  starting: number[];
+  items: number[];
   operation: (old: number) => number;
   test: (num: number) => number;
+  inspections: number;
 }
 
 function factory(var1: string, op: string) {
@@ -31,7 +32,7 @@ function prepareInput(input: string) {
 
     const monkey: IMonkey = {
       id: +el[0].split(' ')[1].replace(':', ''),
-      starting: eval(`[${el[1].replace('Starting items: ', '')}]`),
+      items: eval(`[${el[1].replace('Starting items: ', '')}]`),
       test: (num: number) => {
         if (num % +el[3].split(' ').reverse()[0] === 0) {
           return +el[4].split(' ').reverse()[0];
@@ -40,6 +41,7 @@ function prepareInput(input: string) {
         }
       },
       operation: factory(operationVars[0], operationVars[1]),
+      inspections: 0,
     };
 
     return monkey;
