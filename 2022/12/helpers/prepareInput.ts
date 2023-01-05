@@ -1,3 +1,7 @@
-function prepareInput(input:string) {};
+function prepareInput(input: string) {
+  return input.split('\n').map((el) => {
+    return el.split('');
+  });
+}
 
-export default prepareInput
+export default prepareInput;
