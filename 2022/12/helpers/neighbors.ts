@@ -1,3 +1,3 @@
-function neighbors(row: number, column: number, terrain: string[][]) {}
+function neighbors(row: number, col: number, terrain: string[][]) {}
 
 export default neighbors;
